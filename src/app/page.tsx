@@ -9,6 +9,8 @@ interface Product {
   price: number
   image1: string | null
   image2: string | null
+  categoryId?: string | null
+  category?: { id: string; name: string; slug: string } | null
 }
 
 interface Combo {
@@ -22,10 +24,21 @@ interface Combo {
   image2: string | null
 }
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  image: string | null
+  isActive: boolean
+  _count?: { products: number }
+}
+
 export default function Home() {
   const [view, setView] = useState<'landing' | 'dashboard'>('landing')
   const [products, setProducts] = useState<Product[]>([])
   const [combos, setCombos] = useState<Combo[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [LandingPage, setLandingPage] = useState<React.ComponentType<any> | null>(null)
   const [DashboardPage, setDashboardPage] = useState<React.ComponentType<any> | null>(null)
 
@@ -71,14 +84,17 @@ export default function Home() {
   // Fetch data for landing page
   const fetchLandingData = useCallback(async () => {
     try {
-      const [pRes, cRes] = await Promise.all([
+      const [pRes, cRes, catRes] = await Promise.all([
         fetch('/api/products'),
         fetch('/api/combos'),
+        fetch('/api/categories'),
       ])
       const pData = await pRes.json()
       const cData = await cRes.json()
+      const catData = await catRes.json()
       setProducts(Array.isArray(pData) ? pData : [])
       setCombos(Array.isArray(cData) ? cData : [])
+      setCategories(Array.isArray(catData) ? catData : [])
     } catch {
       // ignore
     }
@@ -105,6 +121,7 @@ export default function Home() {
       <LandingPage
         products={products}
         combos={combos}
+        categories={categories}
         onGoToAdmin={() => {
           window.location.hash = '#dashboard'
           setView('dashboard')

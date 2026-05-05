@@ -18,6 +18,8 @@ import {
   ShoppingCart,
   Plus,
   ChevronRight,
+  Tag,
+  Filter,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { CartSheet } from '@/components/cart/CartSheet'
@@ -29,6 +31,8 @@ interface Product {
   price: number
   image1: string | null
   image2: string | null
+  categoryId?: string | null
+  category?: { id: string; name: string; slug: string } | null
 }
 
 interface Combo {
@@ -42,9 +46,20 @@ interface Combo {
   image2: string | null
 }
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  image: string | null
+  isActive: boolean
+  _count?: { products: number }
+}
+
 interface LandingPageProps {
   products: Product[]
   combos: Combo[]
+  categories: Category[]
   onGoToAdmin: () => void
   paymentStatus: string | null
 }
@@ -110,6 +125,14 @@ function ProductCard({ product }: { product: Product }) {
             style={{ boxShadow: '0 0 12px rgba(26,159,255,0.6)' }}>
             ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
           </div>
+          {/* Category badge */}
+          {product.category && (
+            <div className="absolute top-3 left-3 bg-[#05080f]/80 backdrop-blur-sm text-[#1a9fff] text-xs font-semibold px-2.5 py-1 rounded-lg border border-[#1a9fff]/30"
+              style={{ boxShadow: '0 0 8px rgba(26,159,255,0.2)' }}>
+              <Tag className="w-3 h-3 inline mr-1 -mt-0.5" />
+              {product.category.name}
+            </div>
+          )}
           {/* Add to cart overlay */}
           <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <motion.button
@@ -310,7 +333,13 @@ function PaymentResult({ status, onDismiss }: { status: 'exitoso' | 'fallido' | 
 }
 
 /* ── Main Landing Page ────────────────────────── */
-export default function LandingPage({ products, combos, onGoToAdmin, paymentStatus }: LandingPageProps) {
+export default function LandingPage({ products, combos, categories, onGoToAdmin, paymentStatus }: LandingPageProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  const filteredProducts = selectedCategory
+    ? products.filter(p => p.categoryId === selectedCategory)
+    : products
+
   if (paymentStatus) {
     return (
       <PaymentResult
@@ -466,12 +495,54 @@ export default function LandingPage({ products, combos, onGoToAdmin, paymentStat
             </p>
           </motion.div>
 
-          {products.length > 0 ? (
+          {/* Category Filter */}
+          {categories.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} className="flex flex-wrap items-center justify-center gap-3 mb-10">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
+                  selectedCategory === null
+                    ? 'bg-[#1a9fff] text-white border-[#1a9fff]'
+                    : 'bg-[#0a0f1e] text-[#5c8ab0] border-[#1a9fff]/20 hover:border-[#1a9fff]/50 hover:text-[#1a9fff]'
+                }`}
+                style={selectedCategory === null ? { boxShadow: '0 0 16px rgba(26,159,255,0.4)' } : {}}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                Todos
+              </button>
+              {categories.filter(c => c.isActive).map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
+                    selectedCategory === category.id
+                      ? 'bg-[#1a9fff] text-white border-[#1a9fff]'
+                      : 'bg-[#0a0f1e] text-[#5c8ab0] border-[#1a9fff]/20 hover:border-[#1a9fff]/50 hover:text-[#1a9fff]'
+                  }`}
+                  style={selectedCategory === category.id ? { boxShadow: '0 0 16px rgba(26,159,255,0.4)' } : {}}
+                >
+                  {category.image ? (
+                    <img src={category.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                  ) : (
+                    <Tag className="w-3.5 h-3.5" />
+                  )}
+                  {category.name}
+                  {category._count && (
+                    <span className={`text-xs ml-0.5 ${selectedCategory === category.id ? 'text-white/70' : 'text-[#5c8ab0]/60'}`}>
+                      ({category._count.products})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </motion.div>
+          )}
+
+          {filteredProducts.length > 0 ? (
             <motion.div
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               variants={stagger} initial="initial" whileInView="animate" viewport={{ once: true }}
             >
-              {products.map((product) => <ProductCard key={product.id} product={product} />)}
+              {filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)}
             </motion.div>
           ) : (
             <div className="text-center py-20">
@@ -479,7 +550,19 @@ export default function LandingPage({ products, combos, onGoToAdmin, paymentStat
                 style={{ background: 'rgba(26,159,255,0.05)', border: '1px solid rgba(26,159,255,0.15)' }}>
                 <Package className="w-10 h-10 text-[#1a9fff]/30" />
               </div>
-              <p className="text-[#5c8ab0] text-lg">Pronto tendremos productos disponibles</p>
+              <p className="text-[#5c8ab0] text-lg">
+                {selectedCategory
+                  ? 'No hay productos en esta categoría'
+                  : 'Pronto tendremos productos disponibles'}
+              </p>
+              {selectedCategory && (
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className="mt-4 text-[#1a9fff] text-sm font-semibold hover:underline"
+                >
+                  Ver todos los productos
+                </button>
+              )}
             </div>
           )}
         </div>
