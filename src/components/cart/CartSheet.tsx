@@ -44,11 +44,11 @@ function CartItemRow({ item, onUpdate, onRemove }: { item: CartItem; onUpdate: (
           className="flex gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
         >
           {/* Image */}
-          <div className="w-16 h-16 rounded-lg overflow-hidden bg-emerald-50 flex-shrink-0">
+          <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#0a0f1e] flex-shrink-0">
             {item.image ? (
               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-emerald-300">
+              <div className="w-full h-full flex items-center justify-center text-[#1a9fff]/30">
                 <Package className="w-6 h-6" />
               </div>
             )}
@@ -80,19 +80,19 @@ function CartItemRow({ item, onUpdate, onRemove }: { item: CartItem; onUpdate: (
                   onClick={() => onUpdate(item.id, item.quantity - 1)}
                   className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-100 transition-colors"
                 >
-                  <Minus className="w-3 h-3 text-gray-600" />
+                  <Minus className="w-3 h-3 text-[#a0c4e8]" />
                 </button>
                 <span className="w-8 text-center font-semibold text-sm text-gray-800">{item.quantity}</span>
                 <button
                   onClick={() => onUpdate(item.id, item.quantity + 1)}
                   className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-100 transition-colors"
                 >
-                  <Plus className="w-3 h-3 text-gray-600" />
+                  <Plus className="w-3 h-3 text-[#a0c4e8]" />
                 </button>
               </div>
 
               {/* Price */}
-              <span className="font-bold text-emerald-600 text-sm">
+              <span className="font-bold text-[#1a9fff] text-sm">
                 ${(item.price * item.quantity).toLocaleString('es-AR', { minimumFractionDigits: 0 })}
               </span>
             </div>
@@ -112,14 +112,14 @@ export function CartSheet() {
         <Button
           variant="ghost"
           size="sm"
-          className="relative text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 p-2 rounded-full transition-all"
+          className="relative text-[#a0c4e8] hover:text-[#1a9fff] hover:bg-[#0a0f1e] p-2 rounded-full transition-all"
         >
           <ShoppingCart className="w-5 h-5" />
           {totalItems > 0 && (
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1"
+              className="absolute -top-1 -right-1 bg-[#1a9fff] text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1"
             >
               {totalItems}
             </motion.span>
@@ -131,10 +131,10 @@ export function CartSheet() {
         {/* Header */}
         <SheetHeader className="px-5 pt-5 pb-3 border-b border-gray-100">
           <SheetTitle className="flex items-center gap-2 text-lg">
-            <ShoppingBag className="w-5 h-5 text-emerald-600" />
+            <ShoppingBag className="w-5 h-5 text-[#1a9fff]" />
             Mi Carrito
             {totalItems > 0 && (
-              <Badge className="bg-emerald-100 text-emerald-700 text-xs ml-1">{totalItems} {totalItems === 1 ? 'item' : 'items'}</Badge>
+              <Badge className="bg-[#1a9fff]/10 text-[#1a9fff] text-xs ml-1">{totalItems} {totalItems === 1 ? 'item' : 'items'}</Badge>
             )}
           </SheetTitle>
         </SheetHeader>
@@ -174,7 +174,7 @@ export function CartSheet() {
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-gray-100">
                 <span className="font-bold text-gray-900 text-lg">Total</span>
-                <span className="font-extrabold text-emerald-600 text-2xl">
+                <span className="font-extrabold text-[#1a9fff] text-2xl">
                   ${totalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -183,7 +183,7 @@ export function CartSheet() {
             {/* Actions */}
             <div className="flex flex-col gap-2">
               <Button
-                className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl gap-2 shadow-lg shadow-emerald-600/20"
+                className="w-full h-12 bg-[#1a9fff] hover:bg-[#0d7fd4] text-white font-bold rounded-xl gap-2 shadow-lg shadow-[#1a9fff]/20"
                 onClick={() => {
                   window.location.href = '/carrito'
                 }}

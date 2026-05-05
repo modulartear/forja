@@ -3,14 +3,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
-  Check,
-  Star,
   Shield,
   Truck,
-  Heart,
+  Zap,
+  Star,
   Package,
   CreditCard,
   MessageCircle,
@@ -19,6 +17,7 @@ import {
   CircleAlert,
   ShoppingCart,
   Plus,
+  ChevronRight,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { CartSheet } from '@/components/cart/CartSheet'
@@ -53,17 +52,14 @@ interface LandingPageProps {
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 },
+  transition: { duration: 0.5 },
 }
 
 const stagger = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  animate: { transition: { staggerChildren: 0.08 } },
 }
 
+/* ── Product Card ─────────────────────────────── */
 function ProductCard({ product }: { product: Product }) {
   const [imgIndex, setImgIndex] = useState(0)
   const [addedToCart, setAddedToCart] = useState(false)
@@ -72,24 +68,19 @@ function ProductCard({ product }: { product: Product }) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation()
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image1,
-      type: 'product',
-    })
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.image1, type: 'product' })
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 1500)
   }
 
   return (
     <motion.div variants={fadeInUp}>
-      <Card
-        className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white"
+      <div
+        className="forja-card group cursor-pointer rounded-xl overflow-hidden"
         onClick={() => { window.location.href = '/producto/' + product.id }}
       >
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50">
+        {/* Image */}
+        <div className="relative aspect-square overflow-hidden bg-[#070c18]">
           {images.length > 0 ? (
             <>
               <img
@@ -103,57 +94,61 @@ function ProductCard({ product }: { product: Product }) {
                     <button
                       key={i}
                       onClick={(e) => { e.stopPropagation(); setImgIndex(i) }}
-                      className={`w-2 h-2 rounded-full transition-all ${i === imgIndex ? 'bg-emerald-600 w-5' : 'bg-white/70'}`}
+                      className={`h-1.5 rounded-full transition-all ${i === imgIndex ? 'bg-[#1a9fff] w-5' : 'bg-white/30 w-1.5'}`}
                     />
                   ))}
                 </div>
               )}
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-emerald-300">
-              <Heart className="w-16 h-16" />
+            <div className="w-full h-full flex items-center justify-center text-[#1a9fff]/30">
+              <Package className="w-16 h-16" />
             </div>
           )}
-          <Badge className="absolute top-3 right-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-3 py-1">
+          {/* Price badge */}
+          <div className="absolute top-3 right-3 bg-[#1a9fff] text-white text-sm font-bold px-3 py-1 rounded-lg shadow-lg"
+            style={{ boxShadow: '0 0 12px rgba(26,159,255,0.6)' }}>
             ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
-          </Badge>
-          {/* Add to cart button overlay */}
+          </div>
+          {/* Add to cart overlay */}
           <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={handleAddToCart}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold shadow-lg transition-all ${
                 addedToCart
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white text-emerald-700 hover:bg-emerald-50 border border-emerald-200'
+                  ? 'bg-[#1a9fff] text-white'
+                  : 'bg-[#05080f]/90 text-[#1a9fff] border border-[#1a9fff]/50 hover:border-[#1a9fff]'
               }`}
             >
               <ShoppingCart className="w-3.5 h-3.5" />
-              {addedToCart ? 'Agregado!' : 'Agregar'}
+              {addedToCart ? '¡Agregado!' : 'Agregar'}
             </motion.button>
           </div>
         </div>
-        <CardContent className="p-5">
-          <h3 className="font-bold text-lg text-gray-800 mb-2">{product.name}</h3>
-          <p className="text-gray-500 text-sm line-clamp-2">{product.description}</p>
-          {/* Mobile add to cart button */}
+
+        {/* Info */}
+        <div className="p-5">
+          <h3 className="font-bold text-lg text-white mb-1.5 leading-tight">{product.name}</h3>
+          <p className="text-[#5c8ab0] text-sm line-clamp-2 leading-relaxed">{product.description}</p>
           <button
             onClick={handleAddToCart}
-            className={`mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all md:hidden ${
+            className={`mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all md:hidden ${
               addedToCart
-                ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                ? 'bg-[#1a9fff]/20 text-[#1a9fff] border border-[#1a9fff]/40'
+                : 'bg-[#1a9fff]/10 text-[#1a9fff] border border-[#1a9fff]/20 hover:bg-[#1a9fff]/20'
             }`}
           >
             <Plus className="w-4 h-4" />
             {addedToCart ? 'Agregado al carrito' : 'Agregar al carrito'}
           </button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   )
 }
 
+/* ── Combo Card ───────────────────────────────── */
 function ComboCard({ combo }: { combo: Combo }) {
   const [imgIndex, setImgIndex] = useState(0)
   const [addedToCart, setAddedToCart] = useState(false)
@@ -163,29 +158,34 @@ function ComboCard({ combo }: { combo: Combo }) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation()
-    addItem({
-      id: combo.id,
-      name: combo.name,
-      price: combo.price,
-      image: combo.image1,
-      type: 'combo',
-    })
+    addItem({ id: combo.id, name: combo.name, price: combo.price, image: combo.image1, type: 'combo' })
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 1500)
   }
 
   return (
     <motion.div variants={fadeInUp}>
-      <Card
-        className="group cursor-pointer overflow-hidden border-2 border-emerald-200 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white relative"
+      <div
+        className="group cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+        style={{
+          background: '#0a0f1e',
+          border: '1px solid rgba(26,159,255,0.35)',
+          boxShadow: '0 0 0 transparent',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 24px rgba(26,159,255,0.2), 0 8px 40px rgba(0,0,0,0.6)')}
+        onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 0 0 transparent')}
         onClick={() => { window.location.href = '/producto/' + combo.id + '?type=combo' }}
       >
+        {/* Discount ribbon */}
         {discount > 0 && (
-          <div className="absolute top-0 left-0 bg-red-500 text-white font-bold text-xs px-4 py-1.5 rounded-br-xl z-10">
-            -{discount}% OFF
+          <div className="relative">
+            <div className="absolute top-0 left-0 bg-red-500 text-white font-bold text-xs px-4 py-1.5 rounded-br-xl z-10"
+              style={{ boxShadow: '0 0 10px rgba(239,68,68,0.5)' }}>
+              -{discount}% OFF
+            </div>
           </div>
         )}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50">
+        <div className="relative aspect-square overflow-hidden bg-[#070c18]">
           {images.length > 0 ? (
             <>
               <img
@@ -199,127 +199,107 @@ function ComboCard({ combo }: { combo: Combo }) {
                     <button
                       key={i}
                       onClick={(e) => { e.stopPropagation(); setImgIndex(i) }}
-                      className={`w-2 h-2 rounded-full transition-all ${i === imgIndex ? 'bg-amber-600 w-5' : 'bg-white/70'}`}
+                      className={`h-1.5 rounded-full transition-all ${i === imgIndex ? 'bg-[#1a9fff] w-5' : 'bg-white/30 w-1.5'}`}
                     />
                   ))}
                 </div>
               )}
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-amber-300">
+            <div className="w-full h-full flex items-center justify-center text-[#1a9fff]/30">
               <Star className="w-16 h-16" />
             </div>
           )}
-          {/* Add to cart button overlay */}
           <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={handleAddToCart}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold shadow-lg transition-all ${
                 addedToCart
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-white text-amber-700 hover:bg-amber-50 border border-amber-200'
+                  ? 'bg-[#1a9fff] text-white'
+                  : 'bg-[#05080f]/90 text-[#1a9fff] border border-[#1a9fff]/50'
               }`}
             >
               <ShoppingCart className="w-3.5 h-3.5" />
-              {addedToCart ? 'Agregado!' : 'Agregar'}
+              {addedToCart ? '¡Agregado!' : 'Agregar'}
             </motion.button>
           </div>
         </div>
-        <CardContent className="p-5">
+        <div className="p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Badge className="bg-amber-500 hover:bg-amber-600 text-white">COMBO</Badge>
-            <h3 className="font-bold text-lg text-gray-800">{combo.name}</h3>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full text-[#1a9fff] border border-[#1a9fff]/40 bg-[#1a9fff]/10">
+              COMBO
+            </span>
+            <h3 className="font-bold text-lg text-white leading-tight">{combo.name}</h3>
           </div>
-          <p className="text-gray-500 text-sm mb-3 line-clamp-2">{combo.description}</p>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-emerald-600">${combo.price.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
+          <p className="text-[#5c8ab0] text-sm mb-4 line-clamp-2">{combo.description}</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-[#1a9fff]" style={{ textShadow: '0 0 12px rgba(26,159,255,0.5)' }}>
+              ${combo.price.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
+            </span>
             {combo.originalPrice > 0 && (
-              <span className="text-sm text-gray-400 line-through">${combo.originalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
+              <span className="text-sm text-[#5c8ab0] line-through">
+                ${combo.originalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
+              </span>
             )}
           </div>
-          {/* Mobile add to cart button */}
           <button
             onClick={handleAddToCart}
-            className={`mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all md:hidden ${
+            className={`mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all md:hidden ${
               addedToCart
-                ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                : 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
+                ? 'bg-[#1a9fff]/20 text-[#1a9fff] border border-[#1a9fff]/40'
+                : 'bg-[#1a9fff]/10 text-[#1a9fff] border border-[#1a9fff]/20 hover:bg-[#1a9fff]/20'
             }`}
           >
             <Plus className="w-4 h-4" />
             {addedToCart ? 'Agregado al carrito' : 'Agregar al carrito'}
           </button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   )
 }
 
-/* ==============================
-   PAYMENT RESULT SCREEN
-   ============================== */
+/* ── Payment Result ───────────────────────────── */
 function PaymentResult({ status, onDismiss }: { status: 'exitoso' | 'fallido' | 'pendiente'; onDismiss: () => void }) {
   const config = {
     exitoso: {
-      icon: CircleCheckBig,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
-      border: 'border-emerald-200',
-      title: 'Pago exitoso!',
-      subtitle: 'Tu pedido fue recibido correctamente. Te contactaremos a la brevedad para coordinar el envio.',
-      btnLabel: 'Volver a la tienda',
-      btnClass: 'bg-emerald-600 hover:bg-emerald-700',
+      icon: CircleCheckBig, color: 'text-[#1a9fff]', bg: 'bg-[#1a9fff]/10', border: 'border-[#1a9fff]/30',
+      title: '¡Pago exitoso!', subtitle: 'Tu pedido fue recibido. Te contactaremos a la brevedad para coordinar el envío.',
+      btnClass: 'neon-btn text-white',
     },
     fallido: {
-      icon: CircleX,
-      color: 'text-red-500',
-      bg: 'bg-red-50',
-      border: 'border-red-200',
-      title: 'El pago no se completo',
-      subtitle: 'Hubo un problema con el pago. Podes intentar nuevamente o contactarnos por WhatsApp.',
-      btnLabel: 'Volver a intentar',
-      btnClass: 'bg-red-500 hover:bg-red-600',
+      icon: CircleX, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30',
+      title: 'El pago no se completó', subtitle: 'Hubo un problema con el pago. Podés intentar nuevamente o contactarnos por WhatsApp.',
+      btnClass: 'bg-red-500 hover:bg-red-600 text-white',
     },
     pendiente: {
-      icon: CircleAlert,
-      color: 'text-amber-500',
-      bg: 'bg-amber-50',
-      border: 'border-amber-200',
-      title: 'Pago pendiente',
-      subtitle: 'Tu pago esta siendo procesado. Te enviaremos una confirmacion por email cuando se acredite.',
-      btnLabel: 'Volver a la tienda',
-      btnClass: 'bg-amber-500 hover:bg-amber-600',
+      icon: CircleAlert, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30',
+      title: 'Pago pendiente', subtitle: 'Tu pago está siendo procesado. Te enviaremos confirmación cuando se acredite.',
+      btnClass: 'bg-yellow-500 hover:bg-yellow-600 text-white',
     },
   }
-
   const c = config[status]
   const CIcon = c.icon
-
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md w-full text-center"
-      >
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#05080f' }}>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full text-center">
         <div className={`${c.bg} ${c.border} border-2 rounded-3xl p-10 space-y-6`}>
           <div className={`w-20 h-20 ${c.bg} rounded-full flex items-center justify-center mx-auto`}>
             <CIcon className={`w-10 h-10 ${c.color}`} />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{c.title}</h1>
-            <p className="text-gray-500 mt-3 leading-relaxed">{c.subtitle}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">{c.title}</h1>
+            <p className="text-[#5c8ab0] mt-3 leading-relaxed">{c.subtitle}</p>
           </div>
           <div className="flex flex-col gap-3 pt-2">
-            <Button className={`w-full h-13 ${c.btnClass} text-white font-bold rounded-xl text-base gap-2`}
-              onClick={onDismiss}>
+            <Button className={`w-full h-12 ${c.btnClass} font-bold rounded-xl text-base`} onClick={onDismiss}>
               Volver a la tienda
             </Button>
             {status !== 'exitoso' && (
-              <Button variant="outline" className="w-full h-11 rounded-xl gap-2" onClick={() => window.open('https://wa.me/', '_blank')}>
-                <MessageCircle className="w-4 h-4" />
-                Contactar por WhatsApp
+              <Button variant="outline" className="w-full h-11 rounded-xl gap-2 border-[#1a9fff]/30 text-[#1a9fff] hover:bg-[#1a9fff]/10"
+                onClick={() => window.open('https://wa.me/', '_blank')}>
+                <MessageCircle className="w-4 h-4" /> Contactar por WhatsApp
               </Button>
             )}
           </div>
@@ -329,11 +309,8 @@ function PaymentResult({ status, onDismiss }: { status: 'exitoso' | 'fallido' | 
   )
 }
 
-/* ==============================
-   MAIN LANDING PAGE
-   ============================== */
+/* ── Main Landing Page ────────────────────────── */
 export default function LandingPage({ products, combos, onGoToAdmin, paymentStatus }: LandingPageProps) {
-  // Payment result view
   if (paymentStatus) {
     return (
       <PaymentResult
@@ -344,140 +321,241 @@ export default function LandingPage({ products, combos, onGoToAdmin, paymentStat
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+    <div className="min-h-screen" style={{ background: '#05080f' }}>
+
+      {/* ── Navbar ── */}
+      <nav className="sticky top-0 z-50 backdrop-blur-md border-b"
+        style={{ background: 'rgba(5,8,15,0.85)', borderColor: 'rgba(26,159,255,0.15)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
+            {/* Logo */}
             <div className="flex items-center gap-3">
-              <img src="/capilux-logo.png" alt="Capilux" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover" />
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Capilux</span>
+              <div className="relative">
+                <img src="/forja-logo.jpg" alt="Forja Store"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover neon-flicker"
+                  style={{ boxShadow: '0 0 16px rgba(26,159,255,0.6)' }} />
+              </div>
+              <span className="text-xl sm:text-2xl font-black tracking-wider neon-text">FORJA</span>
+              <span className="text-xl sm:text-2xl font-black tracking-wider text-white/60">STORE</span>
             </div>
+
+            {/* Nav links */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#productos" className="text-gray-600 hover:text-emerald-600 transition-colors font-medium">Productos</a>
-              <a href="#combos" className="text-gray-600 hover:text-emerald-600 transition-colors font-medium">Combos</a>
+              <a href="#productos" className="text-[#5c8ab0] hover:text-[#1a9fff] transition-colors font-medium text-sm tracking-wide">
+                PRODUCTOS
+              </a>
+              <a href="#combos" className="text-[#5c8ab0] hover:text-[#1a9fff] transition-colors font-medium text-sm tracking-wide">
+                COMBOS
+              </a>
             </div>
-            <div className="flex items-center gap-1">
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
               <CartSheet />
-              <Button variant="ghost" size="sm" onClick={onGoToAdmin} className="text-gray-400 hover:text-emerald-600 text-xs">Admin</Button>
+              <button onClick={onGoToAdmin}
+                className="text-[#5c8ab0]/50 hover:text-[#1a9fff]/50 text-xs transition-colors px-2 py-1">
+                Admin
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-400">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-20 w-96 h-96 bg-yellow-300 rounded-full blur-3xl" />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden scanlines"
+        style={{ background: 'linear-gradient(135deg, #05080f 0%, #070d1f 50%, #040b18 100%)' }}>
+        {/* Background glow orbs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-20"
+            style={{ background: 'radial-gradient(circle, #1a9fff, transparent)' }} />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] opacity-15"
+            style={{ background: 'radial-gradient(circle, #0066cc, transparent)' }} />
+          {/* Grid overlay */}
+          <div className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(26,159,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(26,159,255,0.5) 1px, transparent 1px)',
+              backgroundSize: '60px 60px',
+            }} />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center">
-            <Badge className="mb-6 bg-white/20 text-white border-0 text-sm px-4 py-2 backdrop-blur-sm">Nutricion Premium para tu Bienestar</Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              Tu cuerpo merece<span className="block text-yellow-300">lo mejor</span>
+
+        <div className="relative z-[2] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-44 text-center">
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            {/* Logo hero */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center mb-8"
+            >
+              <img src="/forja-logo.jpg" alt="Forja Store"
+                className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover"
+                style={{ boxShadow: '0 0 40px rgba(26,159,255,0.7), 0 0 80px rgba(26,159,255,0.3)' }} />
+            </motion.div>
+
+            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full text-xs font-semibold tracking-widest text-[#1a9fff] border border-[#1a9fff]/30 bg-[#1a9fff]/5">
+              <Zap className="w-3.5 h-3.5" />
+              TIENDA ONLINE OFICIAL
+            </div>
+
+            <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-white mb-4 leading-none tracking-tight">
+              FORJA
             </h1>
-            <p className="text-lg sm:text-xl text-emerald-100 max-w-2xl mx-auto mb-10">
-              Suplementos nutricionales de alta calidad formulados para potenciar tu salud, energia y bienestar general. Descubri la diferencia Capilux.
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-8 tracking-widest neon-text neon-flicker">
+              STORE
+            </h2>
+            <p className="text-base sm:text-lg text-[#5c8ab0] max-w-2xl mx-auto mb-12 leading-relaxed">
+              Los mejores productos, los mejores precios. Descubrí nuestra selección exclusiva y hacé tu pedido hoy.
             </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#productos"><Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100 font-bold text-lg px-8 py-6 rounded-full shadow-lg">Ver Productos</Button></a>
-              <a href="#combos"><Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold text-lg px-8 py-6 rounded-full">Ver Combos</Button></a>
+              <a href="#productos">
+                <button className="neon-btn forja-pulse text-white font-bold text-base px-10 py-4 rounded-xl flex items-center gap-2">
+                  Ver Productos <ChevronRight className="w-5 h-5" />
+                </button>
+              </a>
+              <a href="#combos">
+                <button className="text-[#1a9fff] font-bold text-base px-10 py-4 rounded-xl border border-[#1a9fff]/40 bg-[#1a9fff]/5 hover:bg-[#1a9fff]/10 transition-all flex items-center gap-2">
+                  Ver Combos <ChevronRight className="w-5 h-5" />
+                </button>
+              </a>
             </div>
           </motion.div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent" />
+
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-[2]"
+          style={{ background: 'linear-gradient(to top, #05080f, transparent)' }} />
       </section>
 
-      {/* Trust Badges */}
-      <section className="py-12 bg-white border-b border-gray-100">
+      {/* ── Trust Badges ── */}
+      <section className="py-12 border-y" style={{ borderColor: 'rgba(26,159,255,0.1)', background: '#07090f' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { icon: Shield, label: 'Calidad Garantizada', desc: 'Productos premium' },
-              { icon: Truck, label: 'Envio Rapido', desc: 'A todo el pais' },
-              { icon: Heart, label: '100% Natural', desc: 'Sin conservantes' },
-              { icon: Star, label: 'Resultados Reales', desc: 'Hecho con ciencia' },
+              { icon: Truck, label: 'Envío Rápido', desc: 'A todo el país' },
+              { icon: Zap, label: 'Entrega Segura', desc: 'Sin sorpresas' },
+              { icon: Star, label: 'Mejores Precios', desc: 'Siempre competitivos' },
             ].map((item, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="flex flex-col items-center text-center p-4">
-                <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center mb-3"><item.icon className="w-7 h-7 text-emerald-600" /></div>
-                <h3 className="font-bold text-gray-800 text-sm sm:text-base">{item.label}</h3>
-                <p className="text-gray-400 text-xs sm:text-sm">{item.desc}</p>
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }} className="flex flex-col items-center text-center p-4">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3"
+                  style={{ background: 'rgba(26,159,255,0.08)', border: '1px solid rgba(26,159,255,0.2)' }}>
+                  <item.icon className="w-6 h-6 text-[#1a9fff]" />
+                </div>
+                <h3 className="font-bold text-white text-sm sm:text-base mb-0.5">{item.label}</h3>
+                <p className="text-[#5c8ab0] text-xs sm:text-sm">{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Products Section */}
-      <section id="productos" className="py-16 sm:py-24 bg-gray-50">
+      {/* ── Products Section ── */}
+      <section id="productos" className="py-20 sm:py-28" style={{ background: '#05080f' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <Badge className="mb-4 bg-emerald-100 text-emerald-700 hover:bg-emerald-100">Nuestros Productos</Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Suplementos que transforman</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Cada producto Capilux esta formulado con los mejores ingredientes para garantizar resultados excepcionales.</p>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest text-[#1a9fff] border border-[#1a9fff]/25 bg-[#1a9fff]/5">
+              CATÁLOGO
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-black text-white mb-4">
+              Nuestros <span className="neon-text">Productos</span>
+            </h2>
+            <p className="text-[#5c8ab0] max-w-xl mx-auto">
+              Seleccionados con criterio, entregados con compromiso.
+            </p>
           </motion.div>
+
           {products.length > 0 ? (
-            <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" variants={stagger} initial="initial" whileInView="animate" viewport={{ once: true }}>
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              variants={stagger} initial="initial" whileInView="animate" viewport={{ once: true }}
+            >
+              {products.map((product) => <ProductCard key={product.id} product={product} />)}
             </motion.div>
           ) : (
-            <div className="text-center py-16">
-              <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg">Pronto tendremos productos disponibles</p>
+            <div className="text-center py-20">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ background: 'rgba(26,159,255,0.05)', border: '1px solid rgba(26,159,255,0.15)' }}>
+                <Package className="w-10 h-10 text-[#1a9fff]/30" />
+              </div>
+              <p className="text-[#5c8ab0] text-lg">Pronto tendremos productos disponibles</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Combos Section */}
+      {/* ── Combos Section ── */}
       {combos.length > 0 && (
-        <section id="combos" className="py-16 sm:py-24 bg-white">
+        <section id="combos" className="py-20 sm:py-28"
+          style={{ background: 'linear-gradient(180deg, #07090f 0%, #05080f 100%)', borderTop: '1px solid rgba(26,159,255,0.1)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
-              <Badge className="mb-4 bg-amber-100 text-amber-700 hover:bg-amber-100">Ofertas Especiales</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Combos con descuento</h2>
-              <p className="text-gray-500 max-w-xl mx-auto">Ahorra comprando nuestros combos exclusivos. La mejor relacion calidad-precio para tu nutricion diaria.</p>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest text-[#1a9fff] border border-[#1a9fff]/25 bg-[#1a9fff]/5">
+                OFERTAS ESPECIALES
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-black text-white mb-4">
+                Combos con <span className="neon-text">Descuento</span>
+              </h2>
+              <p className="text-[#5c8ab0] max-w-xl mx-auto">
+                La mejor relación calidad-precio para tu pedido.
+              </p>
             </motion.div>
-            <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" variants={stagger} initial="initial" whileInView="animate" viewport={{ once: true }}>
-              {combos.map((combo) => (
-                <ComboCard key={combo.id} combo={combo} />
-              ))}
+            <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+              variants={stagger} initial="initial" whileInView="animate" viewport={{ once: true }}>
+              {combos.map((combo) => <ComboCard key={combo.id} combo={combo} />)}
             </motion.div>
           </div>
         </section>
       )}
 
-      {/* CTA Section */}
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-emerald-600 to-teal-500 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 right-20 w-64 h-64 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-10 left-10 w-48 h-48 bg-yellow-300 rounded-full blur-3xl" />
+      {/* ── CTA ── */}
+      <section className="py-20 sm:py-28 relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #040b18 0%, #07101e 50%, #040a15 100%)', borderTop: '1px solid rgba(26,159,255,0.15)' }}>
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(26,159,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(26,159,255,1) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[120px] opacity-15"
+            style={{ background: 'radial-gradient(ellipse, #1a9fff, transparent)' }} />
         </div>
-        <div className="relative max-w-4xl mx-auto px-4 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">Comenza hoy tu transformacion</h2>
-            <p className="text-emerald-100 text-lg sm:text-xl mb-8 max-w-2xl mx-auto">Unite a miles de personas que ya eligieron Capilux para mejorar su calidad de vida.</p>
-            <Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100 font-bold text-lg px-10 py-6 rounded-full shadow-xl">Contactanos</Button>
+            <h2 className="text-3xl sm:text-5xl font-black text-white mb-6 leading-tight">
+              ¿Listo para hacer tu pedido?
+            </h2>
+            <p className="text-[#5c8ab0] text-lg mb-10 max-w-2xl mx-auto">
+              Contactanos por WhatsApp y te asesoramos en todo el proceso.
+            </p>
+            <button
+              onClick={() => window.open('https://wa.me/', '_blank')}
+              className="neon-btn forja-pulse text-white font-bold text-lg px-12 py-4 rounded-xl inline-flex items-center gap-3"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Contactar por WhatsApp
+            </button>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
+      {/* ── Footer ── */}
+      <footer className="py-10 border-t" style={{ background: '#03050c', borderColor: 'rgba(26,159,255,0.1)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
-              <img src="/capilux-logo.png" alt="Capilux" className="w-10 h-10 rounded-full object-cover" />
-              <span className="text-xl font-bold text-white">Capilux</span>
+              <img src="/forja-logo.jpg" alt="Forja Store"
+                className="w-9 h-9 rounded-full object-cover"
+                style={{ boxShadow: '0 0 10px rgba(26,159,255,0.4)' }} />
+              <span className="text-lg font-black text-white tracking-wider">FORJA</span>
+              <span className="text-lg font-black text-white/40 tracking-wider">STORE</span>
             </div>
-            <div className="flex items-center gap-4">
-              <CreditCard className="w-5 h-5" />
+            <div className="flex items-center gap-2 text-[#5c8ab0]">
+              <CreditCard className="w-4 h-4" />
               <span className="text-xs">Pagos seguros con MercadoPago</span>
             </div>
-            <p className="text-sm">Todos los derechos reservados. Capilux {new Date().getFullYear()}</p>
+            <p className="text-[#5c8ab0] text-xs">© {new Date().getFullYear()} Forja Store. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

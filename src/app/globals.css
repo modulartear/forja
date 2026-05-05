@@ -43,73 +43,56 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* =============================================
+   FORJA STORE — Dark Neon Theme
+   Primary: Deep navy/dark bg
+   Accent: Electric blue neon (#00BFFF / #1E90FF)
+   Secondary: Bright white text
+   ============================================= */
+
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* Forja dark palette */
+  --forja-bg:        #05080f;
+  --forja-surface:   #0a0f1e;
+  --forja-surface2:  #0d1426;
+  --forja-blue:      #1a9fff;
+  --forja-blue-glow: #00c8ff;
+  --forja-blue-dim:  #0d4f80;
+  --forja-border:    rgba(26, 159, 255, 0.2);
+  --forja-border-bright: rgba(26, 159, 255, 0.5);
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #05080f;
+  --foreground: #e8f4ff;
+  --card: #0a0f1e;
+  --card-foreground: #e8f4ff;
+  --popover: #0a0f1e;
+  --popover-foreground: #e8f4ff;
+  --primary: #1a9fff;
+  --primary-foreground: #ffffff;
+  --secondary: #0d1426;
+  --secondary-foreground: #a0c4e8;
+  --muted: #0d1426;
+  --muted-foreground: #5c8ab0;
+  --accent: #1a9fff;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: rgba(26, 159, 255, 0.2);
+  --input: rgba(26, 159, 255, 0.1);
+  --ring: #1a9fff;
+  --chart-1: #1a9fff;
+  --chart-2: #00c8ff;
+  --chart-3: #0d4f80;
+  --chart-4: #38bdf8;
+  --chart-5: #7dd3fc;
+  --sidebar: #0a0f1e;
+  --sidebar-foreground: #e8f4ff;
+  --sidebar-primary: #1a9fff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0d1426;
+  --sidebar-accent-foreground: #a0c4e8;
+  --sidebar-border: rgba(26, 159, 255, 0.2);
+  --sidebar-ring: #1a9fff;
 }
 
 @layer base {
@@ -118,14 +101,101 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: var(--forja-bg);
+    color: var(--foreground);
   }
 }
 
-@keyframes cta-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+/* Neon glow utilities */
+.neon-text {
+  color: var(--forja-blue-glow);
+  text-shadow:
+    0 0 8px rgba(0, 200, 255, 0.8),
+    0 0 20px rgba(0, 200, 255, 0.5),
+    0 0 40px rgba(0, 200, 255, 0.3);
 }
 
-.cta-pulse {
-  animation: cta-pulse 2s ease-in-out infinite;
+.neon-border {
+  border: 1px solid var(--forja-border-bright);
+  box-shadow:
+    0 0 8px rgba(26, 159, 255, 0.2),
+    inset 0 0 8px rgba(26, 159, 255, 0.05);
 }
+
+.neon-border:hover {
+  border-color: var(--forja-blue-glow);
+  box-shadow:
+    0 0 16px rgba(0, 200, 255, 0.4),
+    inset 0 0 12px rgba(0, 200, 255, 0.08);
+}
+
+.neon-btn {
+  background: linear-gradient(135deg, #1a9fff 0%, #0066cc 100%);
+  box-shadow:
+    0 0 12px rgba(26, 159, 255, 0.5),
+    0 4px 24px rgba(26, 159, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.neon-btn:hover {
+  box-shadow:
+    0 0 20px rgba(0, 200, 255, 0.7),
+    0 4px 32px rgba(26, 159, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.forja-card {
+  background: var(--forja-surface);
+  border: 1px solid var(--forja-border);
+  transition: all 0.3s ease;
+}
+
+.forja-card:hover {
+  border-color: var(--forja-border-bright);
+  box-shadow:
+    0 0 20px rgba(26, 159, 255, 0.15),
+    0 8px 40px rgba(0, 0, 0, 0.6);
+  transform: translateY(-3px);
+}
+
+/* Scanline overlay for hero */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes forja-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(26, 159, 255, 0.5), 0 4px 24px rgba(26, 159, 255, 0.3); }
+  50% { box-shadow: 0 0 24px rgba(0, 200, 255, 0.8), 0 4px 40px rgba(26, 159, 255, 0.6); }
+}
+
+.forja-pulse {
+  animation: forja-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes neon-flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96% { opacity: 0.85; }
+  97% { opacity: 1; }
+  98% { opacity: 0.9; }
+}
+
+.neon-flicker {
+  animation: neon-flicker 6s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--forja-bg); }
+::-webkit-scrollbar-thumb { background: var(--forja-blue-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--forja-blue); }

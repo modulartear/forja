@@ -116,10 +116,12 @@ export default function Home() {
 
   // Loading state
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#05080f' }}>
       <div className="text-center">
-        <img src="/capilux-logo.png" alt="Capilux" className="w-20 h-20 rounded-full mx-auto mb-4 object-cover" />
-        <p className="text-gray-400">Cargando...</p>
+        <img src="/forja-logo.jpg" alt="Forja Store"
+          className="w-20 h-20 rounded-full mx-auto mb-5 object-cover"
+          style={{ boxShadow: '0 0 30px rgba(26,159,255,0.6)' }} />
+        <p className="text-[#1a9fff] text-sm font-bold tracking-widest">CARGANDO...</p>
       </div>
     </div>
   )
