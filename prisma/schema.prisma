@@ -19,7 +19,21 @@ model Product {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   dropiId     String?       @unique
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id])
   landings    LandingPage[]
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  image       String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  products    Product[]
 }
 
 model Combo {

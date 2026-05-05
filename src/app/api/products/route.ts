@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
         ...(isAuth ? {} : { isActive: true }),
       },
       orderBy: { createdAt: 'desc' },
+      include: { category: { select: { id: true, name: true, slug: true } } },
     })
     return NextResponse.json(products)
   } catch {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, price, image1, image2 } = body
+    const { name, description, price, image1, image2, categoryId } = body
 
     if (!name || !description || price === undefined) {
       return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
         image1: image1 || null,
         image2: image2 || null,
         isCombo: false,
+        categoryId: categoryId || null,
       },
     })
 

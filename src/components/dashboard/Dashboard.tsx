@@ -51,6 +51,7 @@ import {
   StickyNote,
   Sparkles,
   Link2,
+  Tag,
 } from 'lucide-react'
 
 interface Product {
@@ -61,6 +62,18 @@ interface Product {
   image1: string | null
   image2: string | null
   isActive: boolean
+  categoryId?: string | null
+  category?: { id: string; name: string; slug: string } | null
+}
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  image: string | null
+  isActive: boolean
+  _count?: { products: number }
 }
 
 interface Combo {
@@ -187,21 +200,24 @@ function ProductForm({
   onSave,
   onCancel,
   loading,
+  categories,
 }: {
   product?: Product | null
   onSave: (data: any) => void
   onCancel: () => void
   loading: boolean
+  categories: Category[]
 }) {
   const [name, setName] = useState(product?.name ?? '')
   const [description, setDescription] = useState(product?.description ?? '')
   const [price, setPrice] = useState(product?.price.toString() ?? '')
   const [image1, setImage1] = useState<string | null>(product?.image1 ?? null)
   const [image2, setImage2] = useState<string | null>(product?.image2 ?? null)
+  const [categoryId, setCategoryId] = useState<string>(product?.categoryId ?? '__none__')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({ name, description, price, image1, image2 })
+    onSave({ name, description, price, image1, image2, categoryId: categoryId === '__none__' ? null : categoryId })
   }
 
   return (
@@ -213,6 +229,20 @@ function ProductForm({
       <div className="space-y-2">
         <Label htmlFor="pname">Nombre del Producto</Label>
         <Input id="pname" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Colageno Hidrolizado" required />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="pcategory">Categoria</Label>
+        <Select value={categoryId} onValueChange={setCategoryId}>
+          <SelectTrigger id="pcategory">
+            <SelectValue placeholder="Sin categoria" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">Sin categoria</SelectItem>
+            {categories.filter(c => c.isActive).map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="space-y-2">
         <Label htmlFor="pdesc">Descripcion</Label>
@@ -303,6 +333,48 @@ const SHIPPING_STATUS_OPTIONS = [
   { value: 'delivered', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700' },
 ]
 
+function CategoryForm({
+  category,
+  onSave,
+  onCancel,
+  loading,
+}: {
+  category?: Category | null
+  onSave: (data: any) => void
+  onCancel: () => void
+  loading: boolean
+}) {
+  const [name, setName] = useState(category?.name ?? '')
+  const [description, setDescription] = useState(category?.description ?? '')
+  const [image, setImage] = useState<string | null>(category?.image ?? null)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave({ name, description, image })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-2">
+        <Label htmlFor="catname">Nombre de la Categoria</Label>
+        <Input id="catname" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Suplementos" required />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="catdesc">Descripcion (opcional)</Label>
+        <Textarea id="catdesc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Breve descripcion de la categoria..." rows={3} />
+      </div>
+      <ImageUpload label="Imagen de la Categoria (opcional)" value={image} onChange={setImage} />
+      <div className="flex gap-3 pt-2">
+        <Button type="submit" disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-700">
+          {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          {category ? 'Actualizar Categoria' : 'Crear Categoria'}
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>Cancelar</Button>
+      </div>
+    </form>
+  )
+}
+
 const PAYMENT_STATUS_OPTIONS = [
   { value: 'all', label: 'Todos' },
   { value: 'pending', label: 'Pendiente' },
@@ -329,6 +401,7 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
 
   const [products, setProducts] = useState<Product[]>([])
   const [combos, setCombos] = useState<Combo[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [activeTab, setActiveTab] = useState('productos')
 
@@ -336,6 +409,8 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [showComboForm, setShowComboForm] = useState(false)
   const [editingCombo, setEditingCombo] = useState<Combo | null>(null)
+  const [showCategoryForm, setShowCategoryForm] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [formLoading, setFormLoading] = useState(false)
 
   // Config states
@@ -527,6 +602,18 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
 
   useEffect(() => { checkAuth() }, [checkAuth])
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await fetch('/api/categories')
+      if (res.ok) {
+        const data = await res.json()
+        setCategories(Array.isArray(data) ? data : [])
+      }
+    } catch {
+      // ignore
+    }
+  }, [])
+
   const fetchData = useCallback(async () => {
     try {
       const [pRes, cRes] = await Promise.all([
@@ -545,11 +632,12 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
   useEffect(() => {
     if (authenticated) {
       fetchData()
+      fetchCategories()
       fetchConfig()
       fetchOrders()
       fetchLandings()
     }
-  }, [authenticated, fetchData, fetchConfig, fetchOrders, fetchLandings])
+  }, [authenticated, fetchData, fetchCategories, fetchConfig, fetchOrders, fetchLandings])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -592,6 +680,31 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
         if (res.ok) { setShowProductForm(false); fetchData() }
       }
     } finally { setFormLoading(false) }
+  }
+
+  const handleSaveCategory = async (data: any) => {
+    setFormLoading(true)
+    try {
+      if (editingCategory) {
+        const res = await fetch(`/api/categories/${editingCategory.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        if (res.ok) { setShowCategoryForm(false); setEditingCategory(null); fetchCategories(); fetchData() }
+      } else {
+        const res = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        if (res.ok) { setShowCategoryForm(false); fetchCategories(); fetchData() }
+      }
+    } finally { setFormLoading(false) }
+  }
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm('Estas seguro de eliminar esta categoria? Los productos asociados quedaran sin categoria.')) return
+    await fetch(`/api/categories/${id}`, { method: 'DELETE' })
+    fetchCategories()
+    fetchData()
+  }
+
+  const handleToggleCategory = async (category: Category) => {
+    await fetch(`/api/categories/${category.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isActive: !category.isActive }) })
+    fetchCategories()
   }
 
   const handleDeleteProduct = async (id: string) => {
@@ -904,6 +1017,7 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
               <p className="text-gray-400 text-sm mt-1">Administra productos, combos y pedidos</p>
             </div>
             <TabsList className="flex-wrap h-auto gap-1">
+              <TabsTrigger value="categorias" className="gap-1.5 text-xs sm:text-sm"><Tag className="w-4 h-4" />Categorias</TabsTrigger>
               <TabsTrigger value="productos" className="gap-1.5 text-xs sm:text-sm"><Package className="w-4 h-4" />Productos</TabsTrigger>
               <TabsTrigger value="combos" className="gap-1.5 text-xs sm:text-sm"><Layers className="w-4 h-4" />Combos</TabsTrigger>
               <TabsTrigger value="pedidos" className="gap-1.5 text-xs sm:text-sm"><ClipboardList className="w-4 h-4" />Ordenes</TabsTrigger>
@@ -912,6 +1026,64 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
               <TabsTrigger value="landings" className="gap-1.5 text-xs sm:text-sm"><Sparkles className="w-4 h-4" />Landings</TabsTrigger>
             </TabsList>
           </div>
+
+          {/* Categories Tab */}
+          <TabsContent value="categorias" className="space-y-4">
+            <div className="flex justify-end">
+              <Button onClick={() => { setEditingCategory(null); setShowCategoryForm(true) }} className="bg-blue-600 hover:bg-blue-700 gap-2">
+                <Plus className="w-4 h-4" />Nueva Categoria
+              </Button>
+            </div>
+            {categories.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <Tag className="w-16 h-16 text-gray-300 mb-4" />
+                  <p className="text-gray-400 text-lg">No hay categorias creadas</p>
+                  <p className="text-gray-300 text-sm mt-1">Crea categorias para organizar tus productos</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {categories.map((category) => (
+                  <Card key={category.id} className={`overflow-hidden border-blue-200 ${!category.isActive ? 'opacity-60' : ''}`}>
+                    <div className="flex gap-3 p-4">
+                      <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-blue-50 flex items-center justify-center">
+                        {category.image ? (
+                          <img src={category.image} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <Tag className="w-8 h-8 text-blue-300" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-gray-800 truncate">{category.name}</h3>
+                          <Badge variant={category.isActive ? 'default' : 'secondary'} className={`text-xs flex-shrink-0 ${category.isActive ? 'bg-blue-100 text-blue-700' : ''}`}>
+                            {category.isActive ? 'Activa' : 'Inactiva'}
+                          </Badge>
+                        </div>
+                        <p className="text-blue-600 font-medium text-sm mt-1">{category._count?.products ?? 0} producto{(category._count?.products ?? 0) !== 1 ? 's' : ''}</p>
+                        {category.description && (
+                          <p className="text-gray-400 text-xs mt-1 line-clamp-1">{category.description}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex border-t">
+                      <Button variant="ghost" size="sm" className="flex-1 rounded-none text-gray-500 hover:text-blue-600 gap-1 border-l" onClick={() => { setEditingCategory(category); setShowCategoryForm(true) }}>
+                        <Pencil className="w-3.5 h-3.5" />Editar
+                      </Button>
+                      <Button variant="ghost" size="sm" className="flex-1 rounded-none text-gray-500 hover:text-emerald-600 gap-1 border-l" onClick={() => handleToggleCategory(category)}>
+                        {category.isActive ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        {category.isActive ? 'Ocultar' : 'Mostrar'}
+                      </Button>
+                      <Button variant="ghost" size="sm" className="flex-1 rounded-none text-gray-500 hover:text-red-600 gap-1 border-l" onClick={() => handleDeleteCategory(category.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />Eliminar
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
           {/* Products Tab */}
           <TabsContent value="productos" className="space-y-4">
@@ -947,6 +1119,9 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
                           </Badge>
                         </div>
                         <p className="text-emerald-600 font-bold mt-1">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</p>
+                        {product.category && (
+                          <span className="inline-flex items-center gap-1 text-xs text-blue-500 mt-0.5"><Tag className="w-3 h-3" />{product.category.name}</span>
+                        )}
                         <p className="text-gray-400 text-xs mt-1 line-clamp-2">{product.description}</p>
                       </div>
                     </div>
@@ -1664,7 +1839,24 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
               {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
             </DialogTitle>
           </DialogHeader>
-          <ProductForm key={editingProduct?.id ?? 'new-product'} product={editingProduct} onSave={handleSaveProduct} onCancel={() => { setShowProductForm(false); setEditingProduct(null) }} loading={formLoading} />
+          <ProductForm key={editingProduct?.id ?? 'new-product'} product={editingProduct} onSave={handleSaveProduct} onCancel={() => { setShowProductForm(false); setEditingProduct(null) }} loading={formLoading} categories={categories} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Category Form Dialog */}
+      <Dialog open={showCategoryForm} onOpenChange={(open) => { if (!open) { setShowCategoryForm(false); setEditingCategory(null) } }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-800">
+              {editingCategory ? 'Editar Categoria' : 'Nueva Categoria'}
+            </DialogTitle>
+          </DialogHeader>
+          <CategoryForm
+            category={editingCategory}
+            onSave={handleSaveCategory}
+            onCancel={() => { setShowCategoryForm(false); setEditingCategory(null) }}
+            loading={formLoading}
+          />
         </DialogContent>
       </Dialog>
 
