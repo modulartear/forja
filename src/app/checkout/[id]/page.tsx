@@ -13,6 +13,7 @@ import {
   Loader2,
   Package,
   Truck,
+  Shield,
 } from 'lucide-react'
 import {
   BuyerForm,
@@ -199,7 +200,7 @@ function CheckoutContent() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ background: '#05080f' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <Skeleton className="w-40 h-8 mb-8" />
           <div className="space-y-6">
@@ -213,12 +214,15 @@ function CheckoutContent() {
 
   if (error || !item) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#05080f' }}>
         <div className="text-center px-4">
-          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Producto no encontrado</h2>
-          <p className="text-gray-500 mb-6">{error}</p>
-          <Button onClick={() => window.location.href = '/'} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ background: 'rgba(26,159,255,0.06)', border: '1px solid rgba(26,159,255,0.2)' }}>
+            <Package className="w-10 h-10 text-[#1a9fff]/30" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Producto no encontrado</h2>
+          <p className="text-[#5c8ab0] mb-6">{error}</p>
+          <Button onClick={() => window.location.href = '/'} className="neon-btn text-white font-bold">
             <ChevronLeft className="w-4 h-4 mr-2" />
             Volver al inicio
           </Button>
@@ -230,19 +234,20 @@ function CheckoutContent() {
   const images = [item.image1, item.image2].filter(Boolean) as string[]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top Bar */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b">
+    <div className="min-h-screen" style={{ background: '#05080f' }}>
+      {/* Top Bar — Dark Neon */}
+      <div className="sticky top-0 z-30 backdrop-blur-md border-b"
+        style={{ background: 'rgba(5,8,15,0.85)', borderColor: 'rgba(26,159,255,0.15)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
           <button
             onClick={() => window.location.href = `/producto/${id}${type === 'combo' ? '?type=combo' : ''}`}
-            className="flex items-center gap-2 text-gray-600 hover:text-emerald-600 transition-colors font-medium text-sm"
+            className="flex items-center gap-2 text-[#5c8ab0] hover:text-[#1a9fff] transition-colors font-medium text-sm"
           >
             <ChevronLeft className="w-4 h-4" />
             Volver al producto
           </button>
-          <div className="h-4 w-px bg-gray-200" />
-          <span className="text-sm font-semibold text-gray-800">Checkout</span>
+          <div className="h-4 w-px" style={{ background: 'rgba(26,159,255,0.2)' }} />
+          <span className="text-sm font-semibold text-white">Checkout</span>
         </div>
       </div>
 
@@ -250,22 +255,25 @@ function CheckoutContent() {
         <div className="grid lg:grid-cols-5 gap-8">
           {/* LEFT: Forms (3/5) */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Product Summary */}
-            <div className="bg-white rounded-xl border p-5">
+            {/* Product Summary — Dark Neon */}
+            <div className="rounded-xl p-5"
+              style={{ background: '#0a0f1e', border: '1px solid rgba(26,159,255,0.15)' }}>
               <div className="flex gap-4">
-                <div className="w-20 h-20 rounded-lg overflow-hidden bg-emerald-50 flex-shrink-0">
+                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0"
+                  style={{ background: '#070c18' }}>
                   {images.length > 0 ? (
                     <img src={images[0]} alt={item.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-emerald-300">
+                    <div className="w-full h-full flex items-center justify-center text-[#1a9fff]/30">
                       <Package className="w-8 h-8" />
                     </div>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                  <p className="text-sm text-gray-500 mt-0.5">Cantidad: {quantity}</p>
-                  <p className="text-emerald-600 font-bold mt-1">
+                  <h3 className="font-semibold text-white truncate">{item.name}</h3>
+                  <p className="text-sm text-[#5c8ab0] mt-0.5">Cantidad: {quantity}</p>
+                  <p className="text-[#1a9fff] font-bold mt-1"
+                    style={{ textShadow: '0 0 8px rgba(26,159,255,0.4)' }}>
                     ${(unitPrice * quantity).toLocaleString('es-AR', { minimumFractionDigits: 0 })}
                   </p>
                 </div>
@@ -273,7 +281,8 @@ function CheckoutContent() {
             </div>
 
             {/* Shipping Address */}
-            <div className="bg-white rounded-xl border p-5">
+            <div className="rounded-xl p-5"
+              style={{ background: '#0a0f1e', border: '1px solid rgba(26,159,255,0.15)' }}>
               <ShippingAddressForm
                 postalCode={postalCode} setPostalCode={setPostalCode}
                 province={province} setProvince={setProvince}
@@ -289,7 +298,8 @@ function CheckoutContent() {
             </div>
 
             {/* Shipping Method */}
-            <div className="bg-white rounded-xl border p-5">
+            <div className="rounded-xl p-5"
+              style={{ background: '#0a0f1e', border: '1px solid rgba(26,159,255,0.15)' }}>
               <ShippingSelector
                 selectedShippingId={selectedShippingId}
                 setSelectedShippingId={setSelectedShippingId}
@@ -297,7 +307,8 @@ function CheckoutContent() {
             </div>
 
             {/* Buyer Info */}
-            <div className="bg-white rounded-xl border p-5">
+            <div className="rounded-xl p-5"
+              style={{ background: '#0a0f1e', border: '1px solid rgba(26,159,255,0.15)' }}>
               <BuyerForm
                 buyerName={buyerName} setBuyerName={setBuyerName}
                 buyerEmail={buyerEmail} setBuyerEmail={setBuyerEmail}
@@ -307,48 +318,55 @@ function CheckoutContent() {
             </div>
           </div>
 
-          {/* RIGHT: Order Summary (2/5) */}
+          {/* RIGHT: Order Summary (2/5) — Dark Neon */}
           <div className="lg:col-span-2">
             <div className="lg:sticky lg:top-16 space-y-4">
-              <div className="bg-white rounded-xl border p-5 space-y-4">
-                <h3 className="font-bold text-gray-900 text-lg">Resumen del pedido</h3>
+              <div className="rounded-xl p-5 space-y-4"
+                style={{ background: '#0a0f1e', border: '1px solid rgba(26,159,255,0.15)' }}>
+                <h3 className="font-bold text-white text-lg">Resumen del pedido</h3>
 
                 <div className="space-y-2.5">
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-[#5c8ab0]">
                     <span>Precio unitario</span>
-                    <span>${unitPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
+                    <span className="text-white">${unitPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-[#5c8ab0]">
                     <span>Cantidad</span>
-                    <span>x{quantity}</span>
+                    <span className="text-white">x{quantity}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-[#5c8ab0]">
                     <span>Subtotal</span>
-                    <span>${(unitPrice * quantity).toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
+                    <span className="text-white">${(unitPrice * quantity).toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-[#5c8ab0]">
                     <span className="flex items-center gap-1">
                       <Truck className="w-3.5 h-3.5" />
                       Envio ({shippingLabel})
                     </span>
-                    <span>{shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString('es-AR')}`}</span>
+                    <span className={shippingCost === 0 ? 'text-[#1a9fff] font-semibold' : 'text-white'}>
+                      {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString('es-AR')}`}
+                    </span>
                   </div>
-                  <Separator />
+                  <Separator style={{ background: 'rgba(26,159,255,0.15)' }} />
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-gray-900 text-lg">Total</span>
-                    <span className="font-extrabold text-emerald-600 text-2xl">
+                    <span className="font-bold text-white text-lg">Total</span>
+                    <span className="font-extrabold text-[#1a9fff] text-2xl"
+                      style={{ textShadow: '0 0 12px rgba(26,159,255,0.5)' }}>
                       ${totalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
                     </span>
                   </div>
                 </div>
 
                 {payError && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg">{payError}</div>
+                  <div className="rounded-lg p-3"
+                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                    <p className="text-red-400 text-sm">{payError}</p>
+                  </div>
                 )}
 
                 <div className="flex flex-col gap-3 pt-2">
                   <Button
-                    className="w-full h-14 bg-[#009ee3] hover:bg-[#0089c7] text-white text-base font-bold rounded-xl gap-3 shadow-lg"
+                    className="w-full h-14 neon-btn forja-pulse text-white text-base font-bold rounded-xl gap-3"
                     onClick={onMP}
                     disabled={payLoading}
                   >
@@ -357,7 +375,7 @@ function CheckoutContent() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full h-12 border-emerald-200 text-emerald-600 hover:bg-emerald-50 font-semibold rounded-xl gap-2"
+                    className="w-full h-12 text-[#1a9fff] border-[#1a9fff]/20 hover:bg-[#1a9fff]/10 hover:border-[#1a9fff]/40 font-semibold rounded-xl gap-2"
                     onClick={handleWhatsApp}
                   >
                     <MessageCircle className="w-4 h-4" />
@@ -366,15 +384,14 @@ function CheckoutContent() {
                 </div>
 
                 {/* Security badges */}
-                <div className="flex items-center justify-center gap-4 pt-3 border-t">
-                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
+                <div className="flex items-center justify-center gap-4 pt-3"
+                  style={{ borderTop: '1px solid rgba(26,159,255,0.1)' }}>
+                  <div className="flex items-center gap-1.5 text-xs text-[#5c8ab0]">
+                    <Shield className="w-4 h-4 text-[#1a9fff]" />
                     Compra segura
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                    <CreditCard className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 text-xs text-[#5c8ab0]">
+                    <CreditCard className="w-3.5 h-3.5 text-[#1a9fff]" />
                     Pago protegido
                   </div>
                 </div>
@@ -391,7 +408,7 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen" style={{ background: '#05080f' }}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
             <Skeleton className="w-40 h-8 mb-8" />
             <div className="space-y-6">

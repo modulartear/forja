@@ -41,10 +41,12 @@ function CartItemRow({ item, onUpdate, onRemove }: { item: CartItem; onUpdate: (
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
+          className="flex gap-3 p-3 rounded-xl"
+          style={{ background: '#0d1426', border: '1px solid rgba(26,159,255,0.15)' }}
         >
           {/* Image */}
-          <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#0a0f1e] flex-shrink-0">
+          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0"
+            style={{ background: '#070c18' }}>
             {item.image ? (
               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
             ) : (
@@ -58,16 +60,16 @@ function CartItemRow({ item, onUpdate, onRemove }: { item: CartItem; onUpdate: (
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <h4 className="font-semibold text-gray-800 text-sm truncate">{item.name}</h4>
+                <h4 className="font-semibold text-white text-sm truncate">{item.name}</h4>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {item.type === 'combo' && (
-                    <Badge className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0 h-4">COMBO</Badge>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-[#1a9fff] border border-[#1a9fff]/40 bg-[#1a9fff]/10">COMBO</span>
                   )}
                 </div>
               </div>
               <button
                 onClick={handleRemove}
-                className="p-1 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                className="p-1 rounded-lg hover:bg-red-500/10 text-[#5c8ab0] hover:text-red-400 transition-colors flex-shrink-0"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -78,21 +80,24 @@ function CartItemRow({ item, onUpdate, onRemove }: { item: CartItem; onUpdate: (
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => onUpdate(item.id, item.quantity - 1)}
-                  className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-100 transition-colors"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                  style={{ border: '1px solid rgba(26,159,255,0.25)', background: 'rgba(26,159,255,0.05)' }}
                 >
-                  <Minus className="w-3 h-3 text-[#a0c4e8]" />
+                  <Minus className="w-3 h-3 text-[#1a9fff]" />
                 </button>
-                <span className="w-8 text-center font-semibold text-sm text-gray-800">{item.quantity}</span>
+                <span className="w-8 text-center font-semibold text-sm text-white">{item.quantity}</span>
                 <button
                   onClick={() => onUpdate(item.id, item.quantity + 1)}
-                  className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-100 transition-colors"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                  style={{ border: '1px solid rgba(26,159,255,0.25)', background: 'rgba(26,159,255,0.05)' }}
                 >
-                  <Plus className="w-3 h-3 text-[#a0c4e8]" />
+                  <Plus className="w-3 h-3 text-[#1a9fff]" />
                 </button>
               </div>
 
               {/* Price */}
-              <span className="font-bold text-[#1a9fff] text-sm">
+              <span className="font-bold text-[#1a9fff] text-sm"
+                style={{ textShadow: '0 0 8px rgba(26,159,255,0.4)' }}>
                 ${(item.price * item.quantity).toLocaleString('es-AR', { minimumFractionDigits: 0 })}
               </span>
             </div>
@@ -120,6 +125,7 @@ export function CartSheet() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="absolute -top-1 -right-1 bg-[#1a9fff] text-white text-[10px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1"
+              style={{ boxShadow: '0 0 8px rgba(26,159,255,0.5)' }}
             >
               {totalItems}
             </motion.span>
@@ -127,14 +133,16 @@ export function CartSheet() {
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
+      <SheetContent className="w-full sm:max-w-md flex flex-col p-0"
+        style={{ background: '#05080f', borderLeft: '1px solid rgba(26,159,255,0.15)' }}>
         {/* Header */}
-        <SheetHeader className="px-5 pt-5 pb-3 border-b border-gray-100">
-          <SheetTitle className="flex items-center gap-2 text-lg">
+        <SheetHeader className="px-5 pt-5 pb-3"
+          style={{ borderBottom: '1px solid rgba(26,159,255,0.1)' }}>
+          <SheetTitle className="flex items-center gap-2 text-lg text-white">
             <ShoppingBag className="w-5 h-5 text-[#1a9fff]" />
             Mi Carrito
             {totalItems > 0 && (
-              <Badge className="bg-[#1a9fff]/10 text-[#1a9fff] text-xs ml-1">{totalItems} {totalItems === 1 ? 'item' : 'items'}</Badge>
+              <Badge className="text-[#1a9fff] border border-[#1a9fff]/40 bg-[#1a9fff]/10 text-xs ml-1">{totalItems} {totalItems === 1 ? 'item' : 'items'}</Badge>
             )}
           </SheetTitle>
         </SheetHeader>
@@ -143,11 +151,12 @@ export function CartSheet() {
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mb-4">
-                <ShoppingCart className="w-10 h-10 text-gray-300" />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
+                style={{ background: 'rgba(26,159,255,0.06)', border: '1px solid rgba(26,159,255,0.15)' }}>
+                <ShoppingCart className="w-10 h-10 text-[#1a9fff]/30" />
               </div>
-              <p className="text-gray-500 font-medium">Tu carrito esta vacio</p>
-              <p className="text-gray-400 text-sm mt-1">Agrega productos para comenzar</p>
+              <p className="text-white font-medium">Tu carrito esta vacio</p>
+              <p className="text-[#5c8ab0] text-sm mt-1">Agrega productos para comenzar</p>
             </div>
           ) : (
             <AnimatePresence>
@@ -165,16 +174,19 @@ export function CartSheet() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <SheetFooter className="border-t border-gray-100 px-5 py-4 space-y-4 bg-white">
+          <SheetFooter className="px-5 py-4 space-y-4"
+            style={{ background: '#0a0f1e', borderTop: '1px solid rgba(26,159,255,0.15)' }}>
             {/* Total */}
             <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-500">
+              <div className="flex justify-between text-sm text-[#5c8ab0]">
                 <span>Subtotal ({totalItems} {totalItems === 1 ? 'producto' : 'productos'})</span>
-                <span>${totalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
+                <span className="text-white">${totalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}</span>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                <span className="font-bold text-gray-900 text-lg">Total</span>
-                <span className="font-extrabold text-[#1a9fff] text-2xl">
+              <div className="flex justify-between items-center pt-2"
+                style={{ borderTop: '1px solid rgba(26,159,255,0.1)' }}>
+                <span className="font-bold text-white text-lg">Total</span>
+                <span className="font-extrabold text-[#1a9fff] text-2xl"
+                  style={{ textShadow: '0 0 12px rgba(26,159,255,0.5)' }}>
                   ${totalPrice.toLocaleString('es-AR', { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -183,7 +195,7 @@ export function CartSheet() {
             {/* Actions */}
             <div className="flex flex-col gap-2">
               <Button
-                className="w-full h-12 bg-[#1a9fff] hover:bg-[#0d7fd4] text-white font-bold rounded-xl gap-2 shadow-lg shadow-[#1a9fff]/20"
+                className="w-full h-12 neon-btn text-white font-bold rounded-xl gap-2"
                 onClick={() => {
                   window.location.href = '/carrito'
                 }}
@@ -195,7 +207,7 @@ export function CartSheet() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-400 hover:text-red-500 text-xs"
+                className="text-[#5c8ab0] hover:text-red-400 text-xs"
                 onClick={clearCart}
               >
                 <X className="w-3.5 h-3.5 mr-1" />

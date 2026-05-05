@@ -34,7 +34,7 @@ export const fallbackShipping = {
 }
 
 /* ==============================
-   BUYER FORM
+   BUYER FORM — Dark Neon
    ============================== */
 export function BuyerForm({
   buyerName,
@@ -57,62 +57,62 @@ export function BuyerForm({
 }) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-1">Tus Datos</h3>
+      <h3 className="font-semibold text-white text-sm uppercase tracking-wide mb-1">Tus Datos</h3>
       <div className="space-y-3">
         <div className="space-y-1.5">
-          <Label htmlFor="bname" className="text-xs text-gray-500">Nombre completo *</Label>
+          <Label htmlFor="bname" className="text-xs text-[#5c8ab0]">Nombre completo *</Label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
             <Input
               id="bname"
               value={buyerName}
               onChange={(e) => setBuyerName(e.target.value)}
               placeholder="Tu nombre y apellido"
-              className="pl-10 h-11"
+              className="pl-10 h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
               required
             />
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="bemail" className="text-xs text-gray-500">Email *</Label>
+          <Label htmlFor="bemail" className="text-xs text-[#5c8ab0]">Email *</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
             <Input
               id="bemail"
               type="email"
               value={buyerEmail}
               onChange={(e) => setBuyerEmail(e.target.value)}
               placeholder="tu@email.com"
-              className="pl-10 h-11"
+              className="pl-10 h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
               required
             />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="bphone" className="text-xs text-gray-500">Telefono</Label>
+            <Label htmlFor="bphone" className="text-xs text-[#5c8ab0]">Telefono</Label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
               <Input
                 id="bphone"
                 type="tel"
                 value={buyerPhone}
                 onChange={(e) => setBuyerPhone(e.target.value)}
                 placeholder="11 1234 5678"
-                className="pl-10 h-11"
+                className="pl-10 h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
               />
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="bdni" className="text-xs text-gray-500">DNI</Label>
+            <Label htmlFor="bdni" className="text-xs text-[#5c8ab0]">DNI</Label>
             <div className="relative">
-              <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
               <Input
                 id="bdni"
                 value={buyerDni}
                 onChange={(e) => setBuyerDni(e.target.value)}
                 placeholder="12345678"
-                className="pl-10 h-11"
+                className="pl-10 h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export function BuyerForm({
 }
 
 /* ==============================
-   SHIPPING ADDRESS FORM
+   SHIPPING ADDRESS FORM — Dark Neon
    ============================== */
 export function ShippingAddressForm({
   postalCode,
@@ -162,25 +162,25 @@ export function ShippingAddressForm({
 }) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-1">Direccion de Envio</h3>
+      <h3 className="font-semibold text-white text-sm uppercase tracking-wide mb-1">Direccion de Envio</h3>
       <div className="space-y-3">
         <div className="space-y-1.5">
-          <Label htmlFor="postalcode" className="text-xs text-gray-500">Codigo Postal *</Label>
+          <Label htmlFor="postalcode" className="text-xs text-[#5c8ab0]">Codigo Postal *</Label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
               <Input
                 id="postalcode"
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
                 placeholder="Ej: B1636"
-                className="pl-10 h-11"
+                className="pl-10 h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
                 required
               />
             </div>
             <Button
               variant="outline"
-              className="h-11 px-4 border-emerald-200 text-emerald-600 hover:bg-emerald-50 font-semibold text-xs whitespace-nowrap"
+              className="h-11 px-4 text-[#1a9fff] border-[#1a9fff]/30 hover:bg-[#1a9fff]/10 hover:border-[#1a9fff]/50 font-semibold text-xs whitespace-nowrap"
               onClick={() => onQuote(postalCode)}
               disabled={quoting || !postalCode}
             >
@@ -189,19 +189,20 @@ export function ShippingAddressForm({
             </Button>
           </div>
           {quoteError && (
-            <p className="text-xs text-amber-600 mt-1">{quoteError}</p>
+            <p className="text-xs text-amber-400 mt-1">{quoteError}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="province" className="text-xs text-gray-500">Provincia</Label>
+          <Label htmlFor="province" className="text-xs text-[#5c8ab0]">Provincia</Label>
           <div className="relative">
-            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
             <select
               id="province"
               value={province}
               onChange={(e) => setProvince(e.target.value)}
-              className="w-full h-11 pl-10 pr-3 rounded-md border border-gray-200 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 appearance-none"
+              className="w-full h-11 pl-10 pr-3 rounded-md text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#1a9fff] focus:border-[#1a9fff]"
+              style={{ background: '#0d1426', border: '1px solid rgba(26,159,255,0.2)', color: province ? '#e8f4ff' : '#5c8ab0' }}
             >
               <option value="">Selecciona tu provincia</option>
               {provinces.map((p) => (
@@ -212,50 +213,50 @@ export function ShippingAddressForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="city" className="text-xs text-gray-500">Ciudad / Localidad</Label>
+          <Label htmlFor="city" className="text-xs text-[#5c8ab0]">Ciudad / Localidad</Label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5c8ab0]" />
             <Input
               id="city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="Ej: Olivos"
-              className="pl-10 h-11"
+              className="pl-10 h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="street" className="text-xs text-gray-500">Calle</Label>
+            <Label htmlFor="street" className="text-xs text-[#5c8ab0]">Calle</Label>
             <Input
               id="street"
               value={street}
               onChange={(e) => setStreet(e.target.value)}
               placeholder="Av. Libertador"
-              className="h-11"
+              className="h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="number" className="text-xs text-gray-500">Numero</Label>
+            <Label htmlFor="number" className="text-xs text-[#5c8ab0]">Numero</Label>
             <Input
               id="number"
               value={number}
               onChange={(e) => setNumber(e.target.value)}
               placeholder="1234"
-              className="h-11"
+              className="h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
             />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="floor" className="text-xs text-gray-500">Piso / Depto <span className="text-gray-400">(opcional)</span></Label>
+          <Label htmlFor="floor" className="text-xs text-[#5c8ab0]">Piso / Depto <span className="text-[#5c8ab0]/50">(opcional)</span></Label>
           <Input
             id="floor"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
             placeholder="Ej: 3B"
-            className="h-11"
+            className="h-11 bg-[#0d1426] border-[rgba(26,159,255,0.2)] text-white placeholder:text-[#5c8ab0]/50 focus:border-[#1a9fff]"
           />
         </div>
       </div>
@@ -264,7 +265,7 @@ export function ShippingAddressForm({
 }
 
 /* ==============================
-   SHIPPING SELECTOR
+   SHIPPING SELECTOR — Dark Neon
    ============================== */
 export function ShippingSelector({
   selectedShippingId,
@@ -280,7 +281,7 @@ export function ShippingSelector({
 
   return (
     <div>
-      <h3 className="font-semibold text-gray-800 text-sm uppercase tracking-wide mb-3">
+      <h3 className="font-semibold text-white text-sm uppercase tracking-wide mb-3">
         Metodo de Envio
       </h3>
       <div className="space-y-2">
@@ -291,37 +292,36 @@ export function ShippingSelector({
             <button
               key={opt.id}
               onClick={() => setSelectedShippingId(opt.id)}
-              className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
-                isSelected
-                  ? 'border-emerald-500 bg-emerald-50/50 shadow-sm'
-                  : 'border-gray-200 hover:border-gray-300 bg-white'
-              }`}
+              className="w-full flex items-center gap-4 p-4 rounded-xl transition-all text-left"
+              style={{
+                border: isSelected ? '2px solid #1a9fff' : '2px solid rgba(26,159,255,0.2)',
+                background: isSelected ? 'rgba(26,159,255,0.08)' : 'transparent',
+                boxShadow: isSelected ? '0 0 12px rgba(26,159,255,0.15)' : 'none',
+              }}
             >
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                isSelected ? 'bg-emerald-600' : 'bg-gray-100'
-              }`}>
-                <TheIcon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-gray-400'}`} />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: isSelected ? '#1a9fff' : 'rgba(26,159,255,0.1)' }}>
+                <TheIcon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-[#1a9fff]'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-800 text-sm">{opt.label}</span>
+                  <span className="font-semibold text-white text-sm">{opt.label}</span>
                   {opt.cost === 0 && (
-                    <Badge className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 hover:bg-emerald-100">GRATIS</Badge>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-[#1a9fff] border border-[#1a9fff]/40 bg-[#1a9fff]/10">GRATIS</span>
                   )}
                 </div>
-                <span className="text-xs text-gray-500">{opt.description || opt.estimatedDays}</span>
+                <span className="text-xs text-[#5c8ab0]">{opt.description || opt.estimatedDays}</span>
               </div>
               <div className="text-right flex-shrink-0">
                 {opt.cost === 0 ? (
-                  <span className="text-sm font-bold text-emerald-600">Gratis</span>
+                  <span className="text-sm font-bold text-[#1a9fff]">Gratis</span>
                 ) : (
-                  <span className="text-sm font-bold text-gray-700">${opt.cost.toLocaleString('es-AR')}</span>
+                  <span className="text-sm font-bold text-white">${opt.cost.toLocaleString('es-AR')}</span>
                 )}
-                <div className={`w-5 h-5 rounded-full border-2 mx-auto mt-1 flex items-center justify-center ${
-                  isSelected ? 'border-emerald-600' : 'border-gray-300'
-                }`}>
+                <div className="w-5 h-5 rounded-full border-2 mx-auto mt-1 flex items-center justify-center"
+                  style={{ borderColor: isSelected ? '#1a9fff' : 'rgba(26,159,255,0.3)' }}>
                   {isSelected && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#1a9fff]" />
                   )}
                 </div>
               </div>
@@ -329,9 +329,10 @@ export function ShippingSelector({
           )
         })}
       </div>
-      <div className="flex items-center gap-2 mt-3 p-3 bg-emerald-50 rounded-lg">
-        <Truck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-        <span className="text-xs text-emerald-700">Envio a todo el pais. Envio gratis en compras superiores.</span>
+      <div className="flex items-center gap-2 mt-3 p-3 rounded-lg"
+        style={{ background: 'rgba(26,159,255,0.06)', border: '1px solid rgba(26,159,255,0.15)' }}>
+        <Truck className="w-4 h-4 text-[#1a9fff] flex-shrink-0" />
+        <span className="text-xs text-[#5c8ab0]">Envio a todo el pais. Envio gratis en compras superiores.</span>
       </div>
     </div>
   )
