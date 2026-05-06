@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Capilux | Nutricion Premium",
-  description: "Suplementos nutricionales de alta calidad para potenciar tu salud, energia y bienestar. Productos premium formulados con los mejores ingredientes.",
-  keywords: ["Capilux", "nutricion", "suplementos", "bienestar", "salud", "vitaminas", "colageno", "proteinas"],
+  title: "Forja Store",
+  description: "Los mejores productos, los mejores precios.",
+  keywords: ["Forja", "Store", "tienda", "online", "productos"],
   icons: {
-    icon: "/capilux-logo.png",
+    icon: "/forja-logo.jpg",
   },
   openGraph: {
-    title: "Capilux | Nutricion Premium",
-    description: "Suplementos nutricionales de alta calidad para potenciar tu salud, energia y bienestar.",
+    title: "Forja Store",
+    description: "Los mejores productos, los mejores precios.",
     type: "website",
   },
 };
@@ -35,6 +35,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var config = sessionStorage.getItem('store-config');
+                  if (config) {
+                    var c = JSON.parse(config);
+                    if (c.STORE_TITLE) document.title = c.STORE_TITLE;
+                    if (c.STORE_FAVICON) {
+                      var link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+                      link.rel = 'icon';
+                      link.href = c.STORE_FAVICON;
+                      document.head.appendChild(link);
+                    }
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >

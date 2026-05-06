@@ -60,6 +60,14 @@ interface LandingPageProps {
   products: Product[]
   combos: Combo[]
   categories: Category[]
+  storeConfig?: {
+    STORE_NAME?: string
+    STORE_LOGO?: string
+    STORE_FAVICON?: string
+    STORE_TITLE?: string
+    STORE_DESCRIPTION?: string
+    STORE_WHATSAPP?: string
+  }
   onGoToAdmin: () => void
   paymentStatus: string | null
 }
@@ -321,7 +329,7 @@ function PaymentResult({ status, onDismiss }: { status: 'exitoso' | 'fallido' | 
             </Button>
             {status !== 'exitoso' && (
               <Button variant="outline" className="w-full h-11 rounded-xl gap-2 border-[#1a9fff]/30 text-[#1a9fff] hover:bg-[#1a9fff]/10"
-                onClick={() => window.open('https://wa.me/', '_blank')}>
+                onClick={() => window.open(whatsappUrl, '_blank')}>
                 <MessageCircle className="w-4 h-4" /> Contactar por WhatsApp
               </Button>
             )}
@@ -333,8 +341,14 @@ function PaymentResult({ status, onDismiss }: { status: 'exitoso' | 'fallido' | 
 }
 
 /* ── Main Landing Page ────────────────────────── */
-export default function LandingPage({ products, combos, categories, onGoToAdmin, paymentStatus }: LandingPageProps) {
+export default function LandingPage({ products, combos, categories, storeConfig, onGoToAdmin, paymentStatus }: LandingPageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  const storeName = storeConfig?.STORE_NAME || 'FORJA'
+  const storeLogo = storeConfig?.STORE_LOGO || '/forja-logo.jpg'
+  const storeWhatsapp = storeConfig?.STORE_WHATSAPP || ''
+  const storeDescription = storeConfig?.STORE_DESCRIPTION || 'Los mejores productos, los mejores precios. Descubrí nuestra selección exclusiva y hacé tu pedido hoy.'
+  const whatsappUrl = storeWhatsapp ? `https://wa.me/${storeWhatsapp}` : 'https://wa.me/'
 
   const filteredProducts = selectedCategory
     ? products.filter(p => p.categoryId === selectedCategory)
@@ -360,11 +374,11 @@ export default function LandingPage({ products, combos, categories, onGoToAdmin,
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="relative">
-                <img src="/forja-logo.jpg" alt="Forja Store"
+                <img src={storeLogo} alt={storeName}
                   className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover neon-flicker"
                   style={{ boxShadow: '0 0 16px rgba(26,159,255,0.6)' }} />
               </div>
-              <span className="text-xl sm:text-2xl font-black tracking-wider neon-text">FORJA</span>
+              <span className="text-xl sm:text-2xl font-black tracking-wider neon-text">{storeName}</span>
               <span className="text-xl sm:text-2xl font-black tracking-wider text-white/60">STORE</span>
             </div>
 
@@ -416,7 +430,7 @@ export default function LandingPage({ products, combos, categories, onGoToAdmin,
               transition={{ duration: 0.6 }}
               className="flex justify-center mb-8"
             >
-              <img src="/forja-logo.jpg" alt="Forja Store"
+              <img src={storeLogo} alt={storeName}
                 className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover"
                 style={{ boxShadow: '0 0 40px rgba(26,159,255,0.7), 0 0 80px rgba(26,159,255,0.3)' }} />
             </motion.div>
@@ -427,13 +441,13 @@ export default function LandingPage({ products, combos, categories, onGoToAdmin,
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-white mb-4 leading-none tracking-tight">
-              FORJA
+              {storeName}
             </h1>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-8 tracking-widest neon-text neon-flicker">
               STORE
             </h2>
             <p className="text-base sm:text-lg text-[#5c8ab0] max-w-2xl mx-auto mb-12 leading-relaxed">
-              Los mejores productos, los mejores precios. Descubrí nuestra selección exclusiva y hacé tu pedido hoy.
+              {storeDescription}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -613,7 +627,7 @@ export default function LandingPage({ products, combos, categories, onGoToAdmin,
               Contactanos por WhatsApp y te asesoramos en todo el proceso.
             </p>
             <button
-              onClick={() => window.open('https://wa.me/', '_blank')}
+              onClick={() => window.open(whatsappUrl, '_blank')}
               className="neon-btn forja-pulse text-white font-bold text-lg px-12 py-4 rounded-xl inline-flex items-center gap-3"
             >
               <MessageCircle className="w-5 h-5" />
@@ -628,10 +642,10 @@ export default function LandingPage({ products, combos, categories, onGoToAdmin,
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
-              <img src="/forja-logo.jpg" alt="Forja Store"
+              <img src={storeLogo} alt={storeName}
                 className="w-9 h-9 rounded-full object-cover"
                 style={{ boxShadow: '0 0 10px rgba(26,159,255,0.4)' }} />
-              <span className="text-lg font-black text-white tracking-wider">FORJA</span>
+              <span className="text-lg font-black text-white tracking-wider">{storeName}</span>
               <span className="text-lg font-black text-white/40 tracking-wider">STORE</span>
             </div>
             <div className="flex items-center gap-2 text-[#5c8ab0]">

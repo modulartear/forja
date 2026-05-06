@@ -35,6 +35,7 @@ import {
   Loader2,
   ImageIcon,
   X,
+  Save,
   Settings,
   CreditCard,
   Globe,
@@ -47,11 +48,20 @@ import {
   Download,
   ChevronDown,
   ChevronUp,
-  Save,
   StickyNote,
   Sparkles,
   Link2,
   Tag,
+  UserIcon,
+  Key,
+  Shield,
+  Store,
+  Image as ImageIconLucide,
+  Monitor,
+  CircleAlert,
+  CircleCheckBig,
+  CircleX,
+  MessageCircle,
 } from 'lucide-react'
 
 interface Product {
@@ -128,6 +138,17 @@ interface LandingPageItem {
   isActive: boolean
   createdAt: string
   product?: { name: string; price: number; image1: string | null } | null
+}
+
+interface User {
+  id: string
+  email: string
+  name: string
+  role: string
+  isActive: boolean
+  permissions: string
+  createdAt: string
+  updatedAt: string
 }
 
 interface DashboardProps {
@@ -375,6 +396,99 @@ function CategoryForm({
   )
 }
 
+function UserForm({
+  user,
+  onSave,
+  onCancel,
+  loading,
+  isSuperadmin,
+}: {
+  user?: User | null
+  onSave: (data: any) => void
+  onCancel: () => void
+  loading: boolean
+  isSuperadmin: boolean
+}) {
+  const [name, setName] = useState(user?.name ?? '')
+  const [email, setEmail] = useState(user?.email ?? '')
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState(user?.role ?? 'editor')
+  const [perms, setPerms] = useState<Record<string, boolean>>(() => {
+    try { return user ? JSON.parse(user.permissions) : { products: true, combos: true, orders: true, categories: true, config: false, users: false } }
+    catch { return { products: true, combos: true, orders: true, categories: true, config: false, users: false } }
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const data: any = { name, email, role, permissions: JSON.stringify(perms) }
+    if (password.trim()) data.password = password
+    onSave(data)
+  }
+
+  const togglePerm = (key: string) => {
+    setPerms(p => ({ ...p, [key]: !p[key] }))
+  }
+
+  const permLabels: Record<string, string> = {
+    products: 'Productos',
+    combos: 'Combos',
+    orders: 'Órdenes',
+    categories: 'Categorías',
+    config: 'Configuración',
+    users: 'Usuarios',
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-2">
+          <Label htmlFor="uname">Nombre</Label>
+          <Input id="uname" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre completo" required />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="uemail">Email</Label>
+          <Input id="uemail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="correo@ejemplo.com" required />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-2">
+          <Label htmlFor="upass">{user ? 'Nueva Contraseña (dejar vacío para no cambiar)' : 'Contraseña'}</Label>
+          <Input id="upass" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" {...(!user ? { required: true } : {})} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="urole">Rol</Label>
+          <select id="urole" value={role} onChange={(e) => setRole(e.target.value)}
+            className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 text-sm">
+            {isSuperadmin && <option value="superadmin">Super Admin</option>}
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="viewer">Visualizador</option>
+          </select>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <Label>Permisos</Label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {Object.entries(permLabels).map(([key, label]) => (
+            <label key={key} className="flex items-center gap-2 cursor-pointer text-sm">
+              <input type="checkbox" checked={perms[key] ?? false} onChange={() => togglePerm(key)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              <span className="text-gray-700">{label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div className="flex gap-3 pt-2">
+        <Button type="submit" disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-700 gap-2">
+          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+          {user ? 'Actualizar Usuario' : 'Crear Usuario'}
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>Cancelar</Button>
+      </div>
+    </form>
+  )
+}
+
 const PAYMENT_STATUS_OPTIONS = [
   { value: 'all', label: 'Todos' },
   { value: 'pending', label: 'Pendiente' },
@@ -445,6 +559,25 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
   const [generatingLanding, setGeneratingLanding] = useState<string | null>(null)
   const [landingStep, setLandingStep] = useState('')
   const [showLandingOverlay, setShowLandingOverlay] = useState(false)
+
+  // Users state
+  const [users, setUsers] = useState<User[]>([])
+  const [showUserForm, setShowUserForm] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [userFormLoading, setUserFormLoading] = useState(false)
+
+  // Store config state
+  const [storeName, setStoreName] = useState('')
+  const [storeLogo, setStoreLogo] = useState<string | null>(null)
+  const [storeFavicon, setStoreFavicon] = useState<string | null>(null)
+  const [storeTitle, setStoreTitle] = useState('')
+  const [storeDescription, setStoreDescription] = useState('')
+  const [storeWhatsapp, setStoreWhatsapp] = useState('')
+  const [storeConfigLoading, setStoreConfigLoading] = useState(false)
+  const [storeConfigSaved, setStoreConfigSaved] = useState(false)
+
+  // Current user info from auth
+  const [currentUser, setCurrentUser] = useState<{ email: string; role: string; permissions: string } | null>(null)
 
   // Fetch landings
   const fetchLandings = useCallback(async () => {
@@ -534,6 +667,31 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
     }
   }, [])
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await fetch('/api/users')
+      if (res.ok) {
+        const data = await res.json()
+        setUsers(Array.isArray(data) ? data : [])
+      }
+    } catch { /* ignore */ }
+  }, [])
+
+  const fetchStoreConfig = useCallback(async () => {
+    try {
+      const res = await fetch('/api/config')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.STORE_NAME) setStoreName(data.STORE_NAME)
+        if (data.STORE_LOGO) setStoreLogo(data.STORE_LOGO)
+        if (data.STORE_FAVICON) setStoreFavicon(data.STORE_FAVICON)
+        if (data.STORE_TITLE) setStoreTitle(data.STORE_TITLE)
+        if (data.STORE_DESCRIPTION) setStoreDescription(data.STORE_DESCRIPTION)
+        if (data.STORE_WHATSAPP) setStoreWhatsapp(data.STORE_WHATSAPP)
+      }
+    } catch { /* ignore */ }
+  }, [])
+
   const handleSaveConfig = async () => {
     setConfigLoading(true)
     setConfigSaved(false)
@@ -591,7 +749,9 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
     try {
       const res = await fetch('/api/auth')
       if (res.ok) {
+        const data = await res.json()
         setAuthenticated(true)
+        setCurrentUser({ email: data.email, role: data.role, permissions: data.permissions })
       } else {
         setAuthenticated(false)
       }
@@ -636,8 +796,10 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
       fetchConfig()
       fetchOrders()
       fetchLandings()
+      fetchUsers()
+      fetchStoreConfig()
     }
-  }, [authenticated, fetchData, fetchCategories, fetchConfig, fetchOrders, fetchLandings])
+  }, [authenticated, fetchData, fetchCategories, fetchConfig, fetchOrders, fetchLandings, fetchUsers, fetchStoreConfig])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -740,6 +902,48 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
   const handleToggleCombo = async (combo: Combo) => {
     await fetch(`/api/combos/${combo.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isActive: !combo.isActive }) })
     fetchData()
+  }
+
+  const handleSaveUser = async (data: any) => {
+    setUserFormLoading(true)
+    try {
+      if (editingUser) {
+        const res = await fetch(`/api/users/${editingUser.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        if (res.ok) { setShowUserForm(false); setEditingUser(null); fetchUsers() }
+        else { const d = await res.json(); alert(d.error || 'Error al actualizar usuario') }
+      } else {
+        const res = await fetch('/api/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        if (res.ok) { setShowUserForm(false); fetchUsers() }
+        else { const d = await res.json(); alert(d.error || 'Error al crear usuario') }
+      }
+    } finally { setUserFormLoading(false) }
+  }
+
+  const handleDeleteUser = async (id: string) => {
+    if (!confirm('Estás seguro de eliminar este usuario?')) return
+    const res = await fetch(`/api/users/${id}`, { method: 'DELETE' })
+    if (res.ok) { fetchUsers() }
+    else { const d = await res.json(); alert(d.error || 'Error al eliminar usuario') }
+  }
+
+  const handleToggleUser = async (user: User) => {
+    await fetch(`/api/users/${user.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isActive: !user.isActive }) })
+    fetchUsers()
+  }
+
+  const handleSaveStoreConfig = async () => {
+    setStoreConfigLoading(true)
+    setStoreConfigSaved(false)
+    try {
+      await fetch('/api/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ configs: { STORE_NAME: storeName, STORE_LOGO: storeLogo || '', STORE_FAVICON: storeFavicon || '', STORE_TITLE: storeTitle, STORE_DESCRIPTION: storeDescription, STORE_WHATSAPP: storeWhatsapp } }),
+      })
+      setStoreConfigSaved(true)
+    } finally {
+      setStoreConfigLoading(false)
+    }
   }
 
   const paymentStatusColor = (status: string) => {
@@ -999,7 +1203,7 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-400 hidden sm:inline">modularte.ar@gmail.com</span>
+              <span className="text-sm text-gray-400 hidden sm:inline">{currentUser?.email || ''}</span>
               <Button variant="outline" size="sm" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50">
                 <LogOut className="w-4 h-4 mr-1" />
                 Salir
@@ -1022,7 +1226,7 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
               <TabsTrigger value="combos" className="gap-1.5 text-xs sm:text-sm"><Layers className="w-4 h-4" />Combos</TabsTrigger>
               <TabsTrigger value="pedidos" className="gap-1.5 text-xs sm:text-sm"><ClipboardList className="w-4 h-4" />Ordenes</TabsTrigger>
               <TabsTrigger value="dropi" className="gap-1.5 text-xs sm:text-sm"><Download className="w-4 h-4" />Dropi</TabsTrigger>
-              <TabsTrigger value="config" className="gap-1.5 text-xs sm:text-sm"><CreditCard className="w-4 h-4" /><span className="hidden sm:inline">MP</span></TabsTrigger>
+              <TabsTrigger value="ajustes" className="gap-1.5 text-xs sm:text-sm"><Settings className="w-4 h-4" />Ajustes</TabsTrigger>
               <TabsTrigger value="landings" className="gap-1.5 text-xs sm:text-sm"><Sparkles className="w-4 h-4" />Landings</TabsTrigger>
             </TabsList>
           </div>
@@ -1487,19 +1691,158 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
           </TabsContent>
 
           {/* MercadoPago Config Tab */}
-          <TabsContent value="config" className="space-y-4">
+          <TabsContent value="ajustes" className="space-y-4">
+            {/* Store Config */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Settings className="w-5 h-5" />
-                  Configuracion de MercadoPago
+                  <Store className="w-5 h-5" />
+                  Configuración de la Tienda
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="storeName">Nombre de la Tienda</Label>
+                    <Input id="storeName" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="Forja Store" className="h-11" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="storeTitle">Título de la Página</Label>
+                    <Input id="storeTitle" value={storeTitle} onChange={(e) => setStoreTitle(e.target.value)} placeholder="Forja Store - Tu Tienda Online" className="h-11" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="storeDesc">Descripción de la Tienda (SEO)</Label>
+                  <Textarea id="storeDesc" value={storeDescription} onChange={(e) => setStoreDescription(e.target.value)} placeholder="Los mejores productos, los mejores precios..." rows={3} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="storeWhatsapp">WhatsApp de Contacto (con código de país)</Label>
+                  <div className="relative">
+                    <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input id="storeWhatsapp" type="text" value={storeWhatsapp} onChange={(e) => setStoreWhatsapp(e.target.value)} placeholder="5491112345678" className="pl-10 h-11" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <ImageUpload label="Logo de la Tienda" value={storeLogo} onChange={setStoreLogo} />
+                  <ImageUpload label="Favicon (ícono de pestaña)" value={storeFavicon} onChange={setStoreFavicon} />
+                </div>
+                <div className="flex items-center gap-4">
+                  {storeLogo && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border">
+                      <img src={storeLogo} alt="Logo" className="w-12 h-12 rounded-full object-cover" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">Logo actual</p>
+                        <p className="text-xs text-gray-400">Se muestra en la tienda y el panel</p>
+                      </div>
+                    </div>
+                  )}
+                  {storeFavicon && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border">
+                      <img src={storeFavicon} alt="Favicon" className="w-8 h-8 rounded object-cover" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">Favicon actual</p>
+                        <p className="text-xs text-gray-400">Se muestra en la pestaña del navegador</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <Button onClick={handleSaveStoreConfig} disabled={storeConfigLoading} className="bg-blue-600 hover:bg-blue-700 gap-2">
+                  {storeConfigLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  Guardar Configuración de Tienda
+                </Button>
+                {storeConfigSaved && (
+                  <p className="text-emerald-600 text-sm flex items-center gap-1"><Check className="w-4 h-4" /> Configuración guardada correctamente</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Users Management */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Shield className="w-5 h-5" />
+                    Gestión de Usuarios
+                  </CardTitle>
+                  {currentUser?.role === 'superadmin' && (
+                    <Button onClick={() => { setEditingUser(null); setShowUserForm(true) }} className="bg-blue-600 hover:bg-blue-700 gap-2">
+                      <Plus className="w-4 h-4" />Nuevo Usuario
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {showUserForm ? (
+                  <UserForm
+                    user={editingUser}
+                    onSave={handleSaveUser}
+                    onCancel={() => { setShowUserForm(false); setEditingUser(null) }}
+                    loading={userFormLoading}
+                    isSuperadmin={currentUser?.role === 'superadmin'}
+                  />
+                ) : (
+                  <>
+                    {users.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <UserIcon className="w-14 h-14 text-gray-300 mb-3" />
+                        <p className="text-gray-400">No hay usuarios registrados</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {users.map((u) => (
+                          <div key={u.id} className={`flex items-center justify-between p-4 rounded-lg border ${!u.isActive ? 'opacity-50' : 'bg-white'}`}>
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                                style={{ background: u.role === 'superadmin' ? '#1e1b4b' : u.role === 'admin' ? '#1e40af' : u.role === 'editor' ? '#065f46' : '#374151' }}>
+                                {u.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-gray-800">{u.name}</span>
+                                  <Badge className={`text-xs ${u.role === 'superadmin' ? 'bg-purple-100 text-purple-700' : u.role === 'admin' ? 'bg-blue-100 text-blue-700' : u.role === 'editor' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                                    {u.role === 'superadmin' ? 'Super Admin' : u.role === 'admin' ? 'Admin' : u.role === 'editor' ? 'Editor' : 'Visualizador'}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-400">{u.email}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-600" onClick={() => { setEditingUser(u); setShowUserForm(true) }}>
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              {currentUser?.role === 'superadmin' && currentUser.email !== u.email && (
+                                <>
+                                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-emerald-600" onClick={() => handleToggleUser(u)}>
+                                    {u.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                  </Button>
+                                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-600" onClick={() => handleDeleteUser(u.id)}>
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* MercadoPago Config */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <CreditCard className="w-5 h-5" />
+                  Configuración de MercadoPago
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 <p className="text-gray-500 text-sm">Ingresa tus credenciales de MercadoPago para habilitar los pagos online. Podes obtener tu Access Token desde <a href="https://www.mercadopago.com.ar/developers/panel" target="_blank" rel="noreferrer" className="text-emerald-600 underline hover:text-emerald-700">MercadoPago Developers</a>.</p>
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="mpToken" className="text-sm font-medium">Access Token (Produccion)</Label>
+                    <Label htmlFor="mpToken" className="text-sm font-medium">Access Token (Producción)</Label>
                     <Input id="mpToken" type="password" value={mpToken} onChange={(e) => setMpToken(e.target.value)} placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="h-11" />
                   </div>
                   <div className="space-y-1.5">
@@ -1512,13 +1855,15 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
                 </div>
                 <Button onClick={handleSaveConfig} disabled={configLoading} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
                   {configLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  Guardar Configuracion
+                  Guardar Configuración
                 </Button>
                 {configSaved && (
-                  <p className="text-emerald-600 text-sm flex items-center gap-1"><Check className="w-4 h-4" /> Configuracion guardada correctamente</p>
+                  <p className="text-emerald-600 text-sm flex items-center gap-1"><Check className="w-4 h-4" /> Configuración guardada correctamente</p>
                 )}
               </CardContent>
             </Card>
+
+            {/* MiniMax Config */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -1537,7 +1882,7 @@ export default function Dashboard({ onGoBack }: DashboardProps) {
                   Guardar API Key
                 </Button>
                 {configSaved && (
-                  <p className="text-emerald-600 text-sm flex items-center gap-1"><Check className="w-4 h-4" /> Configuracion guardada correctamente</p>
+                  <p className="text-emerald-600 text-sm flex items-center gap-1"><Check className="w-4 h-4" /> Configuración guardada correctamente</p>
                 )}
               </CardContent>
             </Card>

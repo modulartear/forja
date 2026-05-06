@@ -34,11 +34,21 @@ interface Category {
   _count?: { products: number }
 }
 
+interface StoreConfig {
+  STORE_NAME?: string
+  STORE_LOGO?: string
+  STORE_FAVICON?: string
+  STORE_TITLE?: string
+  STORE_DESCRIPTION?: string
+  STORE_WHATSAPP?: string
+}
+
 export default function Home() {
   const [view, setView] = useState<'landing' | 'dashboard'>('landing')
   const [products, setProducts] = useState<Product[]>([])
   const [combos, setCombos] = useState<Combo[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [storeConfig, setStoreConfig] = useState<StoreConfig>({})
   const [LandingPage, setLandingPage] = useState<React.ComponentType<any> | null>(null)
   const [DashboardPage, setDashboardPage] = useState<React.ComponentType<any> | null>(null)
 
@@ -84,17 +94,33 @@ export default function Home() {
   // Fetch data for landing page
   const fetchLandingData = useCallback(async () => {
     try {
-      const [pRes, cRes, catRes] = await Promise.all([
+      const [pRes, cRes, catRes, storeRes] = await Promise.all([
         fetch('/api/products'),
         fetch('/api/combos'),
         fetch('/api/categories'),
+        fetch('/api/store-config'),
       ])
       const pData = await pRes.json()
       const cData = await cRes.json()
       const catData = await catRes.json()
+      const storeData = await storeRes.json()
       setProducts(Array.isArray(pData) ? pData : [])
       setCombos(Array.isArray(cData) ? cData : [])
       setCategories(Array.isArray(catData) ? catData : [])
+      setStoreConfig(storeData || {})
+
+      // Apply dynamic title and favicon
+      if (storeData.STORE_TITLE) {
+        document.title = storeData.STORE_TITLE
+      }
+      if (storeData.STORE_FAVICON) {
+        const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement || document.createElement('link')
+        link.rel = 'icon'
+        link.href = storeData.STORE_FAVICON
+        document.head.appendChild(link)
+      }
+      // Cache in sessionStorage for layout script
+      sessionStorage.setItem('store-config', JSON.stringify(storeData))
     } catch {
       // ignore
     }
@@ -122,6 +148,7 @@ export default function Home() {
         products={products}
         combos={combos}
         categories={categories}
+        storeConfig={storeConfig}
         onGoToAdmin={() => {
           window.location.hash = '#dashboard'
           setView('dashboard')
